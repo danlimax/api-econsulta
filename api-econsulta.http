@@ -1,0 +1,6 @@
+@api_econsulta_HostAddress = http://localhost:5211
+
+GET {{api_econsulta_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

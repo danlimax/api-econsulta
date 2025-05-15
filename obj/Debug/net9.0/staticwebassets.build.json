@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "zKqG/vrCDAad7JEl6mzFx+rG+uT+w9uHyupt37SSNtc=",
+  "Source": "api-econsulta",
+  "BasePath": "_content/api-econsulta",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}
