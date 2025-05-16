@@ -1,0 +1,80 @@
+2025-05-16 12:28:38.434 -03:00 [WRN] Sensitive data logging is enabled. Log entries and exception messages may include sensitive application data; this mode should only be enabled during development.
+2025-05-16 12:29:14.731 -03:00 [WRN] Sensitive data logging is enabled. Log entries and exception messages may include sensitive application data; this mode should only be enabled during development.
+2025-05-16 12:29:14.952 -03:00 [INF] Executed DbCommand (19ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2025-05-16 12:29:15.132 -03:00 [INF] Executed DbCommand (11ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE IF NOT EXISTS "__EFMigrationsHistory" (
+    "MigrationId" character varying(150) NOT NULL,
+    "ProductVersion" character varying(32) NOT NULL,
+    CONSTRAINT "PK___EFMigrationsHistory" PRIMARY KEY ("MigrationId")
+);
+2025-05-16 12:29:15.139 -03:00 [INF] Acquiring an exclusive lock for migration application. See https://aka.ms/efcore-docs-migrations-lock for more information if this takes too long.
+2025-05-16 12:29:15.140 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+LOCK TABLE "__EFMigrationsHistory" IN ACCESS EXCLUSIVE MODE
+2025-05-16 12:29:15.143 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2025-05-16 12:29:15.150 -03:00 [INF] Applying migration '20250516152841_InitialMigration'.
+2025-05-16 12:29:15.184 -03:00 [INF] Executed DbCommand (13ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "Users" (
+    "Id" uuid NOT NULL,
+    "Name" text NOT NULL,
+    "Email" text NOT NULL,
+    "PasswordHash" text NOT NULL,
+    "Role" text NOT NULL,
+    CONSTRAINT "PK_Users" PRIMARY KEY ("Id")
+);
+2025-05-16 12:29:15.190 -03:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "Appointments" (
+    "Id" uuid NOT NULL,
+    "DoctorId" uuid NOT NULL,
+    "PatientId" uuid NOT NULL,
+    "Time" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_Appointments" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_Appointments_Users_DoctorId" FOREIGN KEY ("DoctorId") REFERENCES "Users" ("Id") ON DELETE CASCADE,
+    CONSTRAINT "FK_Appointments_Users_PatientId" FOREIGN KEY ("PatientId") REFERENCES "Users" ("Id") ON DELETE CASCADE
+);
+2025-05-16 12:29:15.194 -03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "Availabilities" (
+    "Id" uuid NOT NULL,
+    "DoctorId" uuid NOT NULL,
+    "RoleId" uuid NOT NULL,
+    "StartTime" timestamp with time zone NOT NULL,
+    "EndTime" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_Availabilities" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_Availabilities_Users_DoctorId" FOREIGN KEY ("DoctorId") REFERENCES "Users" ("Id") ON DELETE CASCADE,
+    CONSTRAINT "FK_Availabilities_Users_RoleId" FOREIGN KEY ("RoleId") REFERENCES "Users" ("Id") ON DELETE CASCADE
+);
+2025-05-16 12:29:15.198 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_Appointments_DoctorId" ON "Appointments" ("DoctorId");
+2025-05-16 12:29:15.202 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_Appointments_PatientId" ON "Appointments" ("PatientId");
+2025-05-16 12:29:15.204 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_Availabilities_DoctorId" ON "Availabilities" ("DoctorId");
+2025-05-16 12:29:15.207 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_Availabilities_RoleId" ON "Availabilities" ("RoleId");
+2025-05-16 12:29:15.209 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX "IX_Users_Email" ON "Users" ("Email");
+2025-05-16 12:29:15.214 -03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+VALUES ('20250516152841_InitialMigration', '9.0.5');
+2025-05-16 12:29:20.677 -03:00 [INF] Iniciando a API eConsulta
+2025-05-16 12:29:20.730 -03:00 [INF] User profile is available. Using 'C:\Users\danie\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-05-16 12:29:20.785 -03:00 [WRN] The WebRootPath was not found: D:\projetos\api-econsulta\wwwroot. Static files may be unavailable.
+2025-05-16 12:29:20.807 -03:00 [INF] Now listening on: http://localhost:5211
+2025-05-16 12:29:20.810 -03:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-05-16 12:29:20.811 -03:00 [INF] Hosting environment: Development
+2025-05-16 12:29:20.812 -03:00 [INF] Content root path: D:\projetos\api-econsulta
+2025-05-16 15:45:09.973 -03:00 [INF] Application is shutting down...
+2025-05-16 15:46:43.832 -03:00 [INF] Iniciando a API eConsulta
+2025-05-16 15:46:43.878 -03:00 [INF] User profile is available. Using 'C:\Users\danie\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-05-16 15:46:43.934 -03:00 [WRN] The WebRootPath was not found: D:\projetos\api-econsulta\wwwroot. Static files may be unavailable.
+2025-05-16 15:46:43.996 -03:00 [INF] Now listening on: https://localhost:7083
+2025-05-16 15:46:43.998 -03:00 [INF] Now listening on: http://localhost:5211
+2025-05-16 15:46:44.000 -03:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-05-16 15:46:44.001 -03:00 [INF] Hosting environment: Development
+2025-05-16 15:46:44.002 -03:00 [INF] Content root path: D:\projetos\api-econsulta
+2025-05-16 15:47:28.173 -03:00 [INF] Application is shutting down...

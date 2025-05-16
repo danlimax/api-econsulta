@@ -1,8 +1,7 @@
-using api_econsulta.Data;
-using api_econsulta.DTOs;
-using api_econsulta.Models;
 using Microsoft.EntityFrameworkCore;
-
+using api_econsulta.Data;
+using api_econsulta.Models;
+using api_econsulta.DTOs;
 
 namespace api_econsulta.Services
 {
@@ -10,68 +9,62 @@ namespace api_econsulta.Services
     {
         private readonly EconsultaDbContext _context = context;
 
-        public async Task<Availability?> Create(AddAvailabilityDto dto)
+        public async Task<Availability> CreateAvailabilityAsync(CreateAvailabilityDto dto)
         {
-            var doctor = await _context.Users.FindAsync(dto.DoctorId);
-            if (doctor == null || doctor.Role != "medico")
-                return null;
+            var doctor = await _context.DoctorUsers.FindAsync(dto.DoctorId) 
+                         ?? throw new KeyNotFoundException("Médico não encontrado.");
 
             var availability = new Availability
             {
-                DoctorId = dto.DoctorId,
-                StartTime = dto.StartTime,
-                EndTime = dto.EndTime
+                Id = Guid.NewGuid(),
+                DoctorUserId = doctor.Id,
+                Start = dto.StartTime,
+                End = dto.EndTime,
+                IsBooked = false
             };
 
             _context.Availabilities.Add(availability);
             await _context.SaveChangesAsync();
+
             return availability;
         }
 
-        public async Task<List<Availability>> GetByDoctor(Guid doctorId)
+        public async Task<List<AvailabilityDto>> GetDoctorAvailabilitiesAsync(Guid doctorId)
         {
-            return await _context.Availabilities
-                .Where(a => a.DoctorId == doctorId)
-                .OrderBy(a => a.StartTime)
+            var availabilities = await _context.Availabilities
+                .Where(a => a.DoctorUserId == doctorId)
+                .Include(a => a.DoctorUser)
                 .ToListAsync();
+
+            return availabilities.Select(MapToDto).ToList();
         }
 
-        public async Task<List<Availability>> GetAvailableSlots()
+        // ✅ Método atualizado: agora retorna TODAS as disponibilidades com os dados dos médicos
+        public async Task<List<AvailabilityDto>> GetAvailableAvailabilitiesAsync()
         {
-            var now = DateTime.UtcNow;
-            var bookedTimes = await _context.Availabilities.Select(a => a.StartTime).ToListAsync();
-
-            return await _context.Availabilities
-                .Where(a => a.StartTime > now && !bookedTimes.Contains(a.StartTime))
-                .Include(a => a.Doctor)
-                .OrderBy(a => a.StartTime)
+            var availabilities = await _context.Availabilities
+                .Include(a => a.DoctorUser)
                 .ToListAsync();
+
+            return availabilities.Select(MapToDto).ToList();
         }
 
-        public async Task<bool> Update(Guid id, AddAvailabilityDto dto)
+        private AvailabilityDto MapToDto(Availability availability)
         {
-            var availability = await _context.Availabilities.FindAsync(id);
-            if (availability == null)
-                return false;
-
-            availability.StartTime = dto.StartTime;
-            availability.EndTime = dto.EndTime;
-
-            _context.Availabilities.Update(availability);
-            await _context.SaveChangesAsync();
-            return true;
-        }
-
-        public async Task<bool> Delete(Guid id)
-        {
-            var availability = await _context.Availabilities.FindAsync(id);
-            if (availability == null)
-                return false;
-
-            _context.Availabilities.Remove(availability);
-            await _context.SaveChangesAsync();
-            return true;
+            return new AvailabilityDto
+            {
+                Id = availability.Id,
+                DoctorId = availability.DoctorUserId,
+                StartTime = availability.Start,
+                EndTime = availability.End,
+                Doctor = new DoctorDto
+                {
+                    Id = availability.DoctorUser.Id,
+                    DoctorName = availability.DoctorUser.DoctorName,
+                    Email = availability.DoctorUser.Email,
+                    Specialty = availability.DoctorUser.Specialty
+                }
+            };
         }
     }
-
 }

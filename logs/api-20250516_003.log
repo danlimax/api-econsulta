@@ -1,0 +1,1308 @@
+2025-05-16 17:37:24.788 -03:00 [WRN] Sensitive data logging is enabled. Log entries and exception messages may include sensitive application data; this mode should only be enabled during development.
+2025-05-16 17:37:46.356 -03:00 [WRN] Sensitive data logging is enabled. Log entries and exception messages may include sensitive application data; this mode should only be enabled during development.
+2025-05-16 17:37:46.561 -03:00 [INF] Executed DbCommand (11ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2025-05-16 17:37:46.696 -03:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE IF NOT EXISTS "__EFMigrationsHistory" (
+    "MigrationId" character varying(150) NOT NULL,
+    "ProductVersion" character varying(32) NOT NULL,
+    CONSTRAINT "PK___EFMigrationsHistory" PRIMARY KEY ("MigrationId")
+);
+2025-05-16 17:37:46.702 -03:00 [INF] Acquiring an exclusive lock for migration application. See https://aka.ms/efcore-docs-migrations-lock for more information if this takes too long.
+2025-05-16 17:37:46.704 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+LOCK TABLE "__EFMigrationsHistory" IN ACCESS EXCLUSIVE MODE
+2025-05-16 17:37:46.707 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2025-05-16 17:37:46.714 -03:00 [INF] Applying migration '20250516203725_InitialMigration'.
+2025-05-16 17:37:46.732 -03:00 [INF] Executed DbCommand (6ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "Users" (
+    "Id" uuid NOT NULL,
+    "Email" text NOT NULL,
+    "Role" text NOT NULL,
+    "PasswordHash" text NOT NULL,
+    "Discriminator" character varying(13) NOT NULL,
+    "DoctorName" text,
+    "Specialty" text,
+    "PatientName" text,
+    CONSTRAINT "PK_Users" PRIMARY KEY ("Id")
+);
+2025-05-16 17:37:46.736 -03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "Availabilities" (
+    "Id" uuid NOT NULL,
+    "DoctorId" uuid NOT NULL,
+    "StartTime" timestamp with time zone NOT NULL,
+    "EndTime" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_Availabilities" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_Availabilities_Users_DoctorId" FOREIGN KEY ("DoctorId") REFERENCES "Users" ("Id") ON DELETE RESTRICT
+);
+2025-05-16 17:37:46.741 -03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "Appointments" (
+    "Id" uuid NOT NULL,
+    "PatientId" uuid NOT NULL,
+    "DoctorId" uuid NOT NULL,
+    "AvailabilityId" uuid NOT NULL,
+    "Time" timestamp with time zone NOT NULL,
+    "Status" text NOT NULL,
+    CONSTRAINT "PK_Appointments" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_Appointments_Availabilities_AvailabilityId" FOREIGN KEY ("AvailabilityId") REFERENCES "Availabilities" ("Id") ON DELETE CASCADE,
+    CONSTRAINT "FK_Appointments_Users_DoctorId" FOREIGN KEY ("DoctorId") REFERENCES "Users" ("Id") ON DELETE CASCADE,
+    CONSTRAINT "FK_Appointments_Users_PatientId" FOREIGN KEY ("PatientId") REFERENCES "Users" ("Id") ON DELETE CASCADE
+);
+2025-05-16 17:37:46.745 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_Appointments_AvailabilityId" ON "Appointments" ("AvailabilityId");
+2025-05-16 17:37:46.748 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_Appointments_DoctorId" ON "Appointments" ("DoctorId");
+2025-05-16 17:37:46.751 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_Appointments_PatientId" ON "Appointments" ("PatientId");
+2025-05-16 17:37:46.754 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_Availabilities_DoctorId" ON "Availabilities" ("DoctorId");
+2025-05-16 17:37:46.758 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX "IX_Users_Email" ON "Users" ("Email");
+2025-05-16 17:37:46.760 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+VALUES ('20250516203725_InitialMigration', '9.0.5');
+2025-05-16 17:37:55.511 -03:00 [INF] Iniciando a API eConsulta
+2025-05-16 17:37:55.560 -03:00 [INF] User profile is available. Using 'C:\Users\danie\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-05-16 17:37:55.595 -03:00 [WRN] The WebRootPath was not found: D:\projetos\api-econsulta\wwwroot. Static files may be unavailable.
+2025-05-16 17:37:55.659 -03:00 [INF] Now listening on: https://localhost:7083
+2025-05-16 17:37:55.660 -03:00 [INF] Now listening on: http://localhost:5211
+2025-05-16 17:37:55.662 -03:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-05-16 17:37:55.663 -03:00 [INF] Hosting environment: Development
+2025-05-16 17:37:55.664 -03:00 [INF] Content root path: D:\projetos\api-econsulta
+2025-05-16 17:38:37.002 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - null null
+2025-05-16 17:38:37.013 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - 200 16481 application/javascript; charset=utf-8 12.1345ms
+2025-05-16 17:38:37.033 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - null null
+2025-05-16 17:38:37.113 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 80.7508ms
+2025-05-16 17:41:26.210 -03:00 [INF] Request starting HTTP/2 POST https://localhost:7083/api/auth/register - application/json 76
+2025-05-16 17:41:26.215 -03:00 [INF] CORS policy execution successful.
+2025-05-16 17:41:26.248 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AuthController.Register (api-econsulta)'
+2025-05-16 17:41:26.267 -03:00 [INF] Route matched with {action = "Register", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Register(api_econsulta.DTOs.UserRegisterDto) on controller api_econsulta.Controllers.AuthController (api-econsulta).
+2025-05-16 17:41:26.663 -03:00 [WRN] Sensitive data logging is enabled. Log entries and exception messages may include sensitive application data; this mode should only be enabled during development.
+2025-05-16 17:41:27.037 -03:00 [INF] Executed DbCommand (29ms) [Parameters=[@__ToLower_0='teste@teste.com'], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Users" AS u
+    WHERE lower(u."Email") = @__ToLower_0)
+2025-05-16 17:41:27.646 -03:00 [INF] Executed DbCommand (13ms) [Parameters=[@p0='0196dad4-9711-7f82-a70c-0e1e8e398c4c', @p1='User' (Nullable = false), @p2='teste@teste.com' (Nullable = false), @p3='$2a$12$dCg4dICkHsMrUg6L7lBlcehXW9o25ZpnhImpNdrF1ENhrj8HgVdb6' (Nullable = false), @p4='medico' (Nullable = false)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Users" ("Id", "Discriminator", "Email", "PasswordHash", "Role")
+VALUES (@p0, @p1, @p2, @p3, @p4);
+2025-05-16 17:41:27.654 -03:00 [INF] Usuário registrado com sucesso: teste@teste.com
+2025-05-16 17:41:27.659 -03:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType0`1[[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2025-05-16 17:41:27.674 -03:00 [INF] Executed action api_econsulta.Controllers.AuthController.Register (api-econsulta) in 1403.0016ms
+2025-05-16 17:41:27.676 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AuthController.Register (api-econsulta)'
+2025-05-16 17:41:27.679 -03:00 [INF] HTTP POST /api/auth/register responded 200 in 1443.3533 ms
+2025-05-16 17:41:27.685 -03:00 [INF] Request finished HTTP/2 POST https://localhost:7083/api/auth/register - 200 null application/json; charset=utf-8 1475.1287ms
+2025-05-16 17:41:45.405 -03:00 [INF] Request starting HTTP/2 POST https://localhost:7083/api/auth/login - application/json 56
+2025-05-16 17:41:45.408 -03:00 [INF] CORS policy execution successful.
+2025-05-16 17:41:45.411 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AuthController.Login (api-econsulta)'
+2025-05-16 17:41:45.415 -03:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(api_econsulta.DTOs.UserLoginDto) on controller api_econsulta.Controllers.AuthController (api-econsulta).
+2025-05-16 17:41:45.461 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[@__ToLower_0='teste@teste.com'], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."Discriminator", u."Email", u."PasswordHash", u."Role", u."DoctorName", u."Specialty", u."PatientName"
+FROM "Users" AS u
+WHERE lower(u."Email") = @__ToLower_0
+LIMIT 1
+2025-05-16 17:41:45.717 -03:00 [INF] Login bem-sucedido: teste@teste.com
+2025-05-16 17:41:45.732 -03:00 [INF] Token gerado para usuário: "0196dad4-9711-7f82-a70c-0e1e8e398c4c", expira em: "2025-05-17T20:41:45.7193695Z"
+2025-05-16 17:41:45.734 -03:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType1`1[[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2025-05-16 17:41:45.737 -03:00 [INF] Executed action api_econsulta.Controllers.AuthController.Login (api-econsulta) in 320.2231ms
+2025-05-16 17:41:45.739 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AuthController.Login (api-econsulta)'
+2025-05-16 17:41:45.740 -03:00 [INF] HTTP POST /api/auth/login responded 200 in 329.9151 ms
+2025-05-16 17:41:45.743 -03:00 [INF] Request finished HTTP/2 POST https://localhost:7083/api/auth/login - 200 null application/json; charset=utf-8 337.8455ms
+2025-05-16 17:43:07.512 -03:00 [INF] Request starting HTTP/2 POST https://localhost:7083/api/Availabilities - application/json 140
+2025-05-16 17:43:07.515 -03:00 [INF] CORS policy execution successful.
+2025-05-16 17:43:07.543 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AvailabilitiesController.CreateAvailability (api-econsulta)'
+2025-05-16 17:43:07.546 -03:00 [INF] Route matched with {action = "CreateAvailability", controller = "Availabilities"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] CreateAvailability(api_econsulta.DTOs.CreateAvailabilityDto) on controller api_econsulta.Controllers.AvailabilitiesController (api-econsulta).
+2025-05-16 17:43:08.010 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[@__model_DoctorId_0='0196dad4-9711-7f82-a70c-0e1e8e398c4c'], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."Discriminator", u."Email", u."PasswordHash", u."Role", u."DoctorName", u."Specialty"
+FROM "Users" AS u
+WHERE u."Discriminator" = 'DoctorUser' AND u."Id" = @__model_DoctorId_0
+LIMIT 1
+2025-05-16 17:43:08.013 -03:00 [INF] Executing NotFoundObjectResult, writing value of type '<>f__AnonymousType3`1[[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2025-05-16 17:43:08.015 -03:00 [INF] Executed action api_econsulta.Controllers.AvailabilitiesController.CreateAvailability (api-econsulta) in 466.5883ms
+2025-05-16 17:43:08.016 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AvailabilitiesController.CreateAvailability (api-econsulta)'
+2025-05-16 17:43:08.017 -03:00 [INF] HTTP POST /api/Availabilities responded 404 in 501.9483 ms
+2025-05-16 17:43:08.019 -03:00 [INF] Request finished HTTP/2 POST https://localhost:7083/api/Availabilities - 404 null application/json; charset=utf-8 507.5077ms
+2025-05-16 17:43:44.822 -03:00 [INF] Request starting HTTP/2 POST https://localhost:7083/api/Availabilities - application/json 140
+2025-05-16 17:43:44.825 -03:00 [INF] CORS policy execution successful.
+2025-05-16 17:43:44.828 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AvailabilitiesController.CreateAvailability (api-econsulta)'
+2025-05-16 17:43:44.829 -03:00 [INF] Route matched with {action = "CreateAvailability", controller = "Availabilities"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] CreateAvailability(api_econsulta.DTOs.CreateAvailabilityDto) on controller api_econsulta.Controllers.AvailabilitiesController (api-econsulta).
+2025-05-16 17:43:44.836 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[@__model_DoctorId_0='0196dad4-9711-7f82-a70c-0e1e8e398c4c'], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."Discriminator", u."Email", u."PasswordHash", u."Role", u."DoctorName", u."Specialty"
+FROM "Users" AS u
+WHERE u."Discriminator" = 'DoctorUser' AND u."Id" = @__model_DoctorId_0
+LIMIT 1
+2025-05-16 17:43:44.839 -03:00 [INF] Executing NotFoundObjectResult, writing value of type '<>f__AnonymousType3`1[[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2025-05-16 17:43:44.840 -03:00 [INF] Executed action api_econsulta.Controllers.AvailabilitiesController.CreateAvailability (api-econsulta) in 8.9322ms
+2025-05-16 17:43:44.842 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AvailabilitiesController.CreateAvailability (api-econsulta)'
+2025-05-16 17:43:44.843 -03:00 [INF] HTTP POST /api/Availabilities responded 404 in 16.9806 ms
+2025-05-16 17:43:44.845 -03:00 [INF] Request finished HTTP/2 POST https://localhost:7083/api/Availabilities - 404 null application/json; charset=utf-8 22.8611ms
+2025-05-16 17:47:26.900 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/index.html - null null
+2025-05-16 17:47:26.941 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/index.html - 200 null text/html;charset=utf-8 41.2946ms
+2025-05-16 17:47:26.961 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - null null
+2025-05-16 17:47:26.965 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - 200 16481 application/javascript; charset=utf-8 3.5065ms
+2025-05-16 17:47:27.019 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - null null
+2025-05-16 17:47:27.024 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 5.4708ms
+2025-05-16 17:47:36.956 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/index.html - null null
+2025-05-16 17:47:36.959 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/index.html - 200 null text/html;charset=utf-8 3.2096ms
+2025-05-16 17:47:36.975 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - null null
+2025-05-16 17:47:36.978 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - 200 16481 application/javascript; charset=utf-8 3.0885ms
+2025-05-16 17:47:37.013 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - null null
+2025-05-16 17:47:37.019 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 5.8279ms
+2025-05-16 18:47:54.555 -03:00 [INF] Iniciando a API eConsulta
+2025-05-16 18:47:54.602 -03:00 [INF] User profile is available. Using 'C:\Users\danie\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-05-16 18:47:54.639 -03:00 [WRN] The WebRootPath was not found: D:\projetos\api-econsulta\wwwroot. Static files may be unavailable.
+2025-05-16 18:47:54.706 -03:00 [INF] Now listening on: https://localhost:7083
+2025-05-16 18:47:54.708 -03:00 [INF] Now listening on: http://localhost:5211
+2025-05-16 18:47:54.710 -03:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-05-16 18:47:54.710 -03:00 [INF] Hosting environment: Development
+2025-05-16 18:47:54.711 -03:00 [INF] Content root path: D:\projetos\api-econsulta
+2025-05-16 18:48:41.397 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - null null
+2025-05-16 18:48:41.408 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - 200 16481 application/javascript; charset=utf-8 11.4729ms
+2025-05-16 18:48:41.429 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - null null
+2025-05-16 18:48:41.516 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 86.8071ms
+2025-05-16 18:49:00.202 -03:00 [INF] Application is shutting down...
+2025-05-16 18:49:56.687 -03:00 [WRN] Sensitive data logging is enabled. Log entries and exception messages may include sensitive application data; this mode should only be enabled during development.
+2025-05-16 18:50:11.767 -03:00 [WRN] Sensitive data logging is enabled. Log entries and exception messages may include sensitive application data; this mode should only be enabled during development.
+2025-05-16 18:50:11.962 -03:00 [INF] Executed DbCommand (11ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2025-05-16 18:50:12.095 -03:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE IF NOT EXISTS "__EFMigrationsHistory" (
+    "MigrationId" character varying(150) NOT NULL,
+    "ProductVersion" character varying(32) NOT NULL,
+    CONSTRAINT "PK___EFMigrationsHistory" PRIMARY KEY ("MigrationId")
+);
+2025-05-16 18:50:12.102 -03:00 [INF] Acquiring an exclusive lock for migration application. See https://aka.ms/efcore-docs-migrations-lock for more information if this takes too long.
+2025-05-16 18:50:12.103 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+LOCK TABLE "__EFMigrationsHistory" IN ACCESS EXCLUSIVE MODE
+2025-05-16 18:50:12.106 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2025-05-16 18:50:12.113 -03:00 [INF] Applying migration '20250516214957_UpdateDatabase'.
+2025-05-16 18:50:12.129 -03:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "DoctorUsers" (
+    "Id" uuid NOT NULL,
+    "DoctorName" text NOT NULL,
+    "Email" text NOT NULL,
+    "PasswordHash" text NOT NULL,
+    "Specialty" text NOT NULL,
+    CONSTRAINT "PK_DoctorUsers" PRIMARY KEY ("Id")
+);
+2025-05-16 18:50:12.134 -03:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "PatientUsers" (
+    "Id" uuid NOT NULL,
+    "DoctorName" text NOT NULL,
+    "Email" text NOT NULL,
+    "PasswordHash" text NOT NULL,
+    CONSTRAINT "PK_PatientUsers" PRIMARY KEY ("Id")
+);
+2025-05-16 18:50:12.141 -03:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "Availabilities" (
+    "Id" uuid NOT NULL,
+    "DoctorId" uuid NOT NULL,
+    "StartTime" timestamp with time zone NOT NULL,
+    "EndTime" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_Availabilities" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_Availabilities_DoctorUsers_DoctorId" FOREIGN KEY ("DoctorId") REFERENCES "DoctorUsers" ("Id") ON DELETE RESTRICT
+);
+2025-05-16 18:50:12.148 -03:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "Appointments" (
+    "Id" uuid NOT NULL,
+    "PatientId" uuid NOT NULL,
+    "DoctorId" uuid NOT NULL,
+    "AvailabilityId" uuid NOT NULL,
+    "Time" timestamp with time zone NOT NULL,
+    "Status" text NOT NULL,
+    CONSTRAINT "PK_Appointments" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_Appointments_Availabilities_AvailabilityId" FOREIGN KEY ("AvailabilityId") REFERENCES "Availabilities" ("Id") ON DELETE CASCADE,
+    CONSTRAINT "FK_Appointments_DoctorUsers_DoctorId" FOREIGN KEY ("DoctorId") REFERENCES "DoctorUsers" ("Id") ON DELETE RESTRICT,
+    CONSTRAINT "FK_Appointments_PatientUsers_PatientId" FOREIGN KEY ("PatientId") REFERENCES "PatientUsers" ("Id") ON DELETE RESTRICT
+);
+2025-05-16 18:50:12.152 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_Appointments_AvailabilityId" ON "Appointments" ("AvailabilityId");
+2025-05-16 18:50:12.156 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_Appointments_DoctorId" ON "Appointments" ("DoctorId");
+2025-05-16 18:50:12.160 -03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_Appointments_PatientId" ON "Appointments" ("PatientId");
+2025-05-16 18:50:12.164 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_Availabilities_DoctorId" ON "Availabilities" ("DoctorId");
+2025-05-16 18:50:12.167 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+VALUES ('20250516214957_UpdateDatabase', '9.0.5');
+2025-05-16 18:50:25.761 -03:00 [INF] Iniciando a API eConsulta
+2025-05-16 18:50:25.807 -03:00 [INF] User profile is available. Using 'C:\Users\danie\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-05-16 18:50:25.845 -03:00 [WRN] The WebRootPath was not found: D:\projetos\api-econsulta\wwwroot. Static files may be unavailable.
+2025-05-16 18:50:25.912 -03:00 [INF] Now listening on: https://localhost:7083
+2025-05-16 18:50:25.913 -03:00 [INF] Now listening on: http://localhost:5211
+2025-05-16 18:50:25.915 -03:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-05-16 18:50:25.916 -03:00 [INF] Hosting environment: Development
+2025-05-16 18:50:25.917 -03:00 [INF] Content root path: D:\projetos\api-econsulta
+2025-05-16 18:50:31.030 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - null null
+2025-05-16 18:50:31.043 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - 200 16481 application/javascript; charset=utf-8 13.6008ms
+2025-05-16 18:50:31.137 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - null null
+2025-05-16 18:50:31.225 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 87.9595ms
+2025-05-16 18:51:09.267 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/index.html - null null
+2025-05-16 18:51:09.333 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/index.html - 200 null text/html;charset=utf-8 65.5733ms
+2025-05-16 18:51:09.348 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - null null
+2025-05-16 18:51:09.352 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - 200 16481 application/javascript; charset=utf-8 3.3271ms
+2025-05-16 18:51:09.401 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - null null
+2025-05-16 18:51:09.415 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 13.2927ms
+2025-05-16 18:51:36.839 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/index.html - null null
+2025-05-16 18:51:36.842 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/index.html - 200 null text/html;charset=utf-8 3.5002ms
+2025-05-16 18:51:36.859 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - null null
+2025-05-16 18:51:36.862 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - 200 16481 application/javascript; charset=utf-8 3.682ms
+2025-05-16 18:51:36.900 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - null null
+2025-05-16 18:51:36.908 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 7.9367ms
+2025-05-16 18:52:15.536 -03:00 [INF] Application is shutting down...
+2025-05-16 18:53:58.634 -03:00 [INF] Iniciando a API eConsulta
+2025-05-16 18:53:58.681 -03:00 [INF] User profile is available. Using 'C:\Users\danie\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-05-16 18:53:58.717 -03:00 [WRN] The WebRootPath was not found: D:\projetos\api-econsulta\wwwroot. Static files may be unavailable.
+2025-05-16 18:53:58.781 -03:00 [INF] Now listening on: https://localhost:7083
+2025-05-16 18:53:58.782 -03:00 [INF] Now listening on: http://localhost:5211
+2025-05-16 18:53:58.784 -03:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-05-16 18:53:58.785 -03:00 [INF] Hosting environment: Development
+2025-05-16 18:53:58.786 -03:00 [INF] Content root path: D:\projetos\api-econsulta
+2025-05-16 19:02:00.855 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/index.html - null null
+2025-05-16 19:02:00.926 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/index.html - 200 null text/html;charset=utf-8 70.7372ms
+2025-05-16 19:02:00.941 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - null null
+2025-05-16 19:02:00.949 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - 200 16481 application/javascript; charset=utf-8 8.3442ms
+2025-05-16 19:02:01.062 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - null null
+2025-05-16 19:02:01.144 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 81.4578ms
+2025-05-16 19:02:49.958 -03:00 [INF] Request starting HTTP/2 POST https://localhost:7083/api/auth/register/doctor - application/json 108
+2025-05-16 19:02:49.964 -03:00 [INF] CORS policy execution successful.
+2025-05-16 19:02:49.999 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AuthController.RegisterDoctor (api-econsulta)'
+2025-05-16 19:02:50.013 -03:00 [INF] Route matched with {action = "RegisterDoctor", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] RegisterDoctor(api_econsulta.DTOs.DoctorRegisterDto) on controller api_econsulta.Controllers.AuthController (api-econsulta).
+2025-05-16 19:02:50.371 -03:00 [WRN] Sensitive data logging is enabled. Log entries and exception messages may include sensitive application data; this mode should only be enabled during development.
+2025-05-16 19:02:50.751 -03:00 [INF] Executed DbCommand (29ms) [Parameters=[@__ToLower_0='teste@texte.com'], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "DoctorUsers" AS d
+    WHERE lower(d."Email") = @__ToLower_0)
+2025-05-16 19:02:51.395 -03:00 [INF] Executed DbCommand (12ms) [Parameters=[@p0='ae8a97ab-b0f2-40c4-9c4b-d222b1474f49', @p1='Teste' (Nullable = false), @p2='teste@texte.com' (Nullable = false), @p3='$2a$12$UA3V01e9/nPzH7I/QISOdO8M6JETy.usSZalruGzxavpY8yAxAf56' (Nullable = false), @p4='Clínico' (Nullable = false)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "DoctorUsers" ("Id", "DoctorName", "Email", "PasswordHash", "Specialty")
+VALUES (@p0, @p1, @p2, @p3, @p4);
+2025-05-16 19:02:51.407 -03:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType0`4[[System.Guid, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2025-05-16 19:02:51.421 -03:00 [INF] Executed action api_econsulta.Controllers.AuthController.RegisterDoctor (api-econsulta) in 1404.2987ms
+2025-05-16 19:02:51.423 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AuthController.RegisterDoctor (api-econsulta)'
+2025-05-16 19:02:51.426 -03:00 [INF] HTTP POST /api/auth/register/doctor responded 200 in 1440.3566 ms
+2025-05-16 19:02:51.432 -03:00 [INF] Request finished HTTP/2 POST https://localhost:7083/api/auth/register/doctor - 200 null application/json; charset=utf-8 1474.5246ms
+2025-05-16 19:05:55.373 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/index.html - null null
+2025-05-16 19:05:55.377 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/index.html - 200 null text/html;charset=utf-8 3.2185ms
+2025-05-16 19:05:55.390 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - null null
+2025-05-16 19:05:55.394 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - 200 16481 application/javascript; charset=utf-8 3.7106ms
+2025-05-16 19:05:55.528 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - null null
+2025-05-16 19:05:55.536 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 7.6095ms
+2025-05-16 19:06:11.187 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/index.html - null null
+2025-05-16 19:06:11.190 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/index.html - 200 null text/html;charset=utf-8 3.1253ms
+2025-05-16 19:06:11.203 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - null null
+2025-05-16 19:06:11.206 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - 200 16481 application/javascript; charset=utf-8 3.1463ms
+2025-05-16 19:06:11.249 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - null null
+2025-05-16 19:06:11.256 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 6.9855ms
+2025-05-16 19:08:33.344 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/index.html - null null
+2025-05-16 19:08:33.347 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/index.html - 200 null text/html;charset=utf-8 2.8861ms
+2025-05-16 19:08:33.358 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - null null
+2025-05-16 19:08:33.362 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - 200 16481 application/javascript; charset=utf-8 3.1834ms
+2025-05-16 19:08:33.412 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - null null
+2025-05-16 19:08:33.419 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 7.5293ms
+2025-05-16 19:10:02.954 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/index.html - null null
+2025-05-16 19:10:02.957 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/index.html - 200 null text/html;charset=utf-8 2.9961ms
+2025-05-16 19:10:02.974 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - null null
+2025-05-16 19:10:02.977 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - 200 16481 application/javascript; charset=utf-8 3.7009ms
+2025-05-16 19:10:03.055 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - null null
+2025-05-16 19:10:03.111 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 56.248ms
+2025-05-16 19:13:21.716 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/index.html - null null
+2025-05-16 19:13:21.719 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/index.html - 200 null text/html;charset=utf-8 2.6862ms
+2025-05-16 19:13:21.738 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - null null
+2025-05-16 19:13:21.741 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - 200 16481 application/javascript; charset=utf-8 2.5805ms
+2025-05-16 19:13:21.777 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - null null
+2025-05-16 19:13:21.783 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 6.3441ms
+2025-05-16 19:13:45.384 -03:00 [INF] Request starting HTTP/2 POST https://localhost:7083/api/auth/login - application/json 56
+2025-05-16 19:13:45.387 -03:00 [INF] CORS policy execution successful.
+2025-05-16 19:13:45.388 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AuthController.Login (api-econsulta)'
+2025-05-16 19:13:45.392 -03:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(api_econsulta.DTOs.LoginDto) on controller api_econsulta.Controllers.AuthController (api-econsulta).
+2025-05-16 19:13:45.444 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[@__lowerEmail_0='teste@teste.com'], CommandType='"Text"', CommandTimeout='30']
+SELECT d."Id", d."DoctorName", d."Email", d."PasswordHash", d."Specialty"
+FROM "DoctorUsers" AS d
+WHERE d."Email" = @__lowerEmail_0
+LIMIT 1
+2025-05-16 19:13:45.714 -03:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType11`2[[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2025-05-16 19:13:45.717 -03:00 [INF] Executed action api_econsulta.Controllers.AuthController.Login (api-econsulta) in 323.4341ms
+2025-05-16 19:13:45.719 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AuthController.Login (api-econsulta)'
+2025-05-16 19:13:45.720 -03:00 [INF] HTTP POST /api/auth/login responded 200 in 332.3172 ms
+2025-05-16 19:13:45.722 -03:00 [INF] Request finished HTTP/2 POST https://localhost:7083/api/auth/login - 200 null application/json; charset=utf-8 338.4861ms
+2025-05-16 19:15:11.368 -03:00 [INF] Request starting HTTP/2 POST https://localhost:7083/api/appointments - application/json 210
+2025-05-16 19:15:11.371 -03:00 [INF] CORS policy execution successful.
+2025-05-16 19:15:11.396 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AppointmentController.Create (api-econsulta)'
+2025-05-16 19:15:11.400 -03:00 [INF] Route matched with {action = "Create", controller = "Appointment"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Create(api_econsulta.DTOs.CreateAppointmentDto) on controller api_econsulta.Controllers.AppointmentController (api-econsulta).
+2025-05-16 19:15:11.409 -03:00 [INF] Executing BadRequestObjectResult, writing value of type 'Microsoft.AspNetCore.Mvc.ValidationProblemDetails'.
+2025-05-16 19:15:11.422 -03:00 [INF] Executed action api_econsulta.Controllers.AppointmentController.Create (api-econsulta) in 20.5391ms
+2025-05-16 19:15:11.423 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AppointmentController.Create (api-econsulta)'
+2025-05-16 19:15:11.425 -03:00 [INF] HTTP POST /api/appointments responded 400 in 52.1456 ms
+2025-05-16 19:15:11.427 -03:00 [INF] Request finished HTTP/2 POST https://localhost:7083/api/appointments - 400 null application/problem+json; charset=utf-8 58.58ms
+2025-05-16 19:15:24.501 -03:00 [INF] Request starting HTTP/2 POST https://localhost:7083/api/appointments - application/json 210
+2025-05-16 19:15:24.504 -03:00 [INF] CORS policy execution successful.
+2025-05-16 19:15:24.505 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AppointmentController.Create (api-econsulta)'
+2025-05-16 19:15:24.507 -03:00 [INF] Route matched with {action = "Create", controller = "Appointment"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Create(api_econsulta.DTOs.CreateAppointmentDto) on controller api_econsulta.Controllers.AppointmentController (api-econsulta).
+2025-05-16 19:15:24.511 -03:00 [INF] Executing BadRequestObjectResult, writing value of type 'Microsoft.AspNetCore.Mvc.ValidationProblemDetails'.
+2025-05-16 19:15:24.512 -03:00 [INF] Executed action api_econsulta.Controllers.AppointmentController.Create (api-econsulta) in 3.2682ms
+2025-05-16 19:15:24.514 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AppointmentController.Create (api-econsulta)'
+2025-05-16 19:15:24.515 -03:00 [INF] HTTP POST /api/appointments responded 400 in 10.3730 ms
+2025-05-16 19:15:24.517 -03:00 [INF] Request finished HTTP/2 POST https://localhost:7083/api/appointments - 400 null application/problem+json; charset=utf-8 15.8565ms
+2025-05-16 19:15:50.284 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/index.html - null null
+2025-05-16 19:15:50.286 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/index.html - 200 null text/html;charset=utf-8 2.4096ms
+2025-05-16 19:15:50.302 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - null null
+2025-05-16 19:15:50.305 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - 200 16481 application/javascript; charset=utf-8 2.8009ms
+2025-05-16 19:15:50.351 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - null null
+2025-05-16 19:15:50.357 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 5.9154ms
+2025-05-16 19:16:10.728 -03:00 [INF] Request starting HTTP/2 POST https://localhost:7083/api/Availabilities - application/json 141
+2025-05-16 19:16:10.731 -03:00 [INF] CORS policy execution successful.
+2025-05-16 19:16:10.735 -03:00 [INF] Authorization failed. These requirements were not met:
+Handler assertion should evaluate to true.
+2025-05-16 19:16:10.739 -03:00 [INF] AuthenticationScheme: Bearer was challenged.
+2025-05-16 19:16:10.740 -03:00 [INF] HTTP POST /api/Availabilities responded 401 in 7.0593 ms
+2025-05-16 19:16:10.741 -03:00 [INF] Request finished HTTP/2 POST https://localhost:7083/api/Availabilities - 401 0 null 12.7864ms
+2025-05-16 19:16:38.753 -03:00 [INF] Request starting HTTP/2 POST https://localhost:7083/api/auth/login - application/json 56
+2025-05-16 19:16:38.756 -03:00 [INF] CORS policy execution successful.
+2025-05-16 19:16:38.757 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AuthController.Login (api-econsulta)'
+2025-05-16 19:16:38.758 -03:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(api_econsulta.DTOs.LoginDto) on controller api_econsulta.Controllers.AuthController (api-econsulta).
+2025-05-16 19:16:38.808 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[@__lowerEmail_0='teste@teste.com'], CommandType='"Text"', CommandTimeout='30']
+SELECT d."Id", d."DoctorName", d."Email", d."PasswordHash", d."Specialty"
+FROM "DoctorUsers" AS d
+WHERE d."Email" = @__lowerEmail_0
+LIMIT 1
+2025-05-16 19:16:39.062 -03:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType11`2[[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2025-05-16 19:16:39.064 -03:00 [INF] Executed action api_econsulta.Controllers.AuthController.Login (api-econsulta) in 304.127ms
+2025-05-16 19:16:39.066 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AuthController.Login (api-econsulta)'
+2025-05-16 19:16:39.067 -03:00 [INF] HTTP POST /api/auth/login responded 200 in 309.9378 ms
+2025-05-16 19:16:39.069 -03:00 [INF] Request finished HTTP/2 POST https://localhost:7083/api/auth/login - 200 null application/json; charset=utf-8 316.0714ms
+2025-05-16 19:17:15.519 -03:00 [INF] Request starting HTTP/2 POST https://localhost:7083/api/Availabilities - application/json 141
+2025-05-16 19:17:15.521 -03:00 [INF] CORS policy execution successful.
+2025-05-16 19:17:15.524 -03:00 [INF] Authorization failed. These requirements were not met:
+Handler assertion should evaluate to true.
+2025-05-16 19:17:15.534 -03:00 [INF] AuthenticationScheme: Bearer was forbidden.
+2025-05-16 19:17:15.535 -03:00 [INF] HTTP POST /api/Availabilities responded 403 in 12.8952 ms
+2025-05-16 19:17:15.537 -03:00 [INF] Request finished HTTP/2 POST https://localhost:7083/api/Availabilities - 403 0 null 17.9069ms
+2025-05-16 19:18:11.436 -03:00 [INF] Request starting HTTP/2 POST https://localhost:7083/api/Availabilities - application/json 141
+2025-05-16 19:18:11.439 -03:00 [INF] CORS policy execution successful.
+2025-05-16 19:18:11.442 -03:00 [INF] Authorization failed. These requirements were not met:
+Handler assertion should evaluate to true.
+2025-05-16 19:18:11.443 -03:00 [INF] AuthenticationScheme: Bearer was forbidden.
+2025-05-16 19:18:11.444 -03:00 [INF] HTTP POST /api/Availabilities responded 403 in 3.6367 ms
+2025-05-16 19:18:11.446 -03:00 [INF] Request finished HTTP/2 POST https://localhost:7083/api/Availabilities - 403 0 null 10.1196ms
+2025-05-16 19:21:05.223 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/index.html - null null
+2025-05-16 19:21:05.226 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/index.html - 200 null text/html;charset=utf-8 3.1466ms
+2025-05-16 19:21:05.230 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/index.html - null null
+2025-05-16 19:21:05.233 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/index.html - 200 null text/html;charset=utf-8 2.7027ms
+2025-05-16 19:21:05.249 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - null null
+2025-05-16 19:21:05.252 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - 200 16481 application/javascript; charset=utf-8 2.6159ms
+2025-05-16 19:21:05.303 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - null null
+2025-05-16 19:21:05.309 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 5.8021ms
+2025-05-16 19:23:02.578 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/index.html - null null
+2025-05-16 19:23:02.580 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/index.html - 200 null text/html;charset=utf-8 2.7546ms
+2025-05-16 19:23:02.584 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/index.html - null null
+2025-05-16 19:23:02.586 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/index.html - 200 null text/html;charset=utf-8 2.4239ms
+2025-05-16 19:23:02.600 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - null null
+2025-05-16 19:23:02.603 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - 200 16481 application/javascript; charset=utf-8 2.9333ms
+2025-05-16 19:23:02.648 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - null null
+2025-05-16 19:23:02.654 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 5.2631ms
+2025-05-16 19:25:01.019 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/index.html - null null
+2025-05-16 19:25:01.022 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/index.html - 200 null text/html;charset=utf-8 2.4909ms
+2025-05-16 19:25:01.032 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - null null
+2025-05-16 19:25:01.035 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - 200 16481 application/javascript; charset=utf-8 3.0891ms
+2025-05-16 19:25:01.102 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - null null
+2025-05-16 19:25:01.107 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 5.3742ms
+2025-05-16 19:25:25.208 -03:00 [INF] Request starting HTTP/2 POST https://localhost:7083/api/auth/login - application/json 56
+2025-05-16 19:25:25.210 -03:00 [INF] CORS policy execution successful.
+2025-05-16 19:25:25.211 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AuthController.Login (api-econsulta)'
+2025-05-16 19:25:25.215 -03:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(api_econsulta.DTOs.LoginDto) on controller api_econsulta.Controllers.AuthController (api-econsulta).
+2025-05-16 19:25:25.228 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[@__lowerEmail_0='teste@teste.com'], CommandType='"Text"', CommandTimeout='30']
+SELECT d."Id", d."DoctorName", d."Email", d."PasswordHash", d."Specialty"
+FROM "DoctorUsers" AS d
+WHERE d."Email" = @__lowerEmail_0
+LIMIT 1
+2025-05-16 19:25:25.479 -03:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType11`2[[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2025-05-16 19:25:25.481 -03:00 [INF] Executed action api_econsulta.Controllers.AuthController.Login (api-econsulta) in 264.4464ms
+2025-05-16 19:25:25.483 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AuthController.Login (api-econsulta)'
+2025-05-16 19:25:25.484 -03:00 [INF] HTTP POST /api/auth/login responded 200 in 272.8774 ms
+2025-05-16 19:25:25.486 -03:00 [INF] Request finished HTTP/2 POST https://localhost:7083/api/auth/login - 200 null application/json; charset=utf-8 278.4408ms
+2025-05-16 19:26:10.361 -03:00 [INF] Request starting HTTP/2 POST https://localhost:7083/api/Availabilities - application/json 140
+2025-05-16 19:26:10.364 -03:00 [INF] CORS policy execution successful.
+2025-05-16 19:26:10.367 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AvailabilitiesController.CreateAvailability (api-econsulta)'
+2025-05-16 19:26:10.370 -03:00 [INF] Route matched with {action = "CreateAvailability", controller = "Availabilities"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] CreateAvailability(api_econsulta.DTOs.CreateAvailabilityDto) on controller api_econsulta.Controllers.AvailabilitiesController (api-econsulta).
+2025-05-16 19:26:10.385 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[@__model_DoctorId_0='ae8a97ab-b0f2-40c4-9c4b-d222b1474f49'], CommandType='"Text"', CommandTimeout='30']
+SELECT d."Id", d."DoctorName", d."Email", d."PasswordHash", d."Specialty"
+FROM "DoctorUsers" AS d
+WHERE d."Id" = @__model_DoctorId_0
+LIMIT 1
+2025-05-16 19:26:10.423 -03:00 [INF] Executed DbCommand (14ms) [Parameters=[@p0='91f87cb9-fe2d-494e-a73f-2353e23c7b20', @p1='ae8a97ab-b0f2-40c4-9c4b-d222b1474f49', @p2='2025-05-16T22:25:48.5350000Z' (DbType = DateTime), @p3='2025-05-16T22:25:48.5350000Z' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Availabilities" ("Id", "DoctorId", "EndTime", "StartTime")
+VALUES (@p0, @p1, @p2, @p3);
+2025-05-16 19:26:10.427 -03:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType2`2[[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[api_econsulta.DTOs.AvailabilityDto, api-econsulta, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-05-16 19:26:10.432 -03:00 [INF] Executed action api_econsulta.Controllers.AvailabilitiesController.CreateAvailability (api-econsulta) in 59.7794ms
+2025-05-16 19:26:10.433 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AvailabilitiesController.CreateAvailability (api-econsulta)'
+2025-05-16 19:26:10.435 -03:00 [INF] HTTP POST /api/Availabilities responded 200 in 68.4524 ms
+2025-05-16 19:26:10.437 -03:00 [INF] Request finished HTTP/2 POST https://localhost:7083/api/Availabilities - 200 null application/json; charset=utf-8 75.3447ms
+2025-05-16 19:26:36.597 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/api/Availabilities/doctor/91f87cb9-fe2d-494e-a73f-2353e23c7b20 - null null
+2025-05-16 19:26:36.601 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetDoctorAvailabilities (api-econsulta)'
+2025-05-16 19:26:36.604 -03:00 [INF] Route matched with {action = "GetDoctorAvailabilities", controller = "Availabilities"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetDoctorAvailabilities(System.Guid) on controller api_econsulta.Controllers.AvailabilitiesController (api-econsulta).
+2025-05-16 19:26:36.634 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[@__doctorId_0='91f87cb9-fe2d-494e-a73f-2353e23c7b20'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."DoctorId", a."EndTime", a."StartTime", d."Id", d."DoctorName", d."Email", d."PasswordHash", d."Specialty"
+FROM "Availabilities" AS a
+INNER JOIN "DoctorUsers" AS d ON a."DoctorId" = d."Id"
+WHERE a."DoctorId" = @__doctorId_0
+2025-05-16 19:26:36.637 -03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[api_econsulta.DTOs.AvailabilityDto, api-econsulta, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-05-16 19:26:36.640 -03:00 [INF] Executed action api_econsulta.Controllers.AvailabilitiesController.GetDoctorAvailabilities (api-econsulta) in 33.6583ms
+2025-05-16 19:26:36.641 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetDoctorAvailabilities (api-econsulta)'
+2025-05-16 19:26:36.642 -03:00 [INF] HTTP GET /api/Availabilities/doctor/91f87cb9-fe2d-494e-a73f-2353e23c7b20 responded 200 in 42.2289 ms
+2025-05-16 19:26:36.644 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/api/Availabilities/doctor/91f87cb9-fe2d-494e-a73f-2353e23c7b20 - 200 null application/json; charset=utf-8 46.9583ms
+2025-05-16 19:26:44.699 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/api/Availabilities/doctor/91f87cb9-fe2d-494e-a73f-2353e23c7b20 - null null
+2025-05-16 19:26:44.703 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetDoctorAvailabilities (api-econsulta)'
+2025-05-16 19:26:44.704 -03:00 [INF] Route matched with {action = "GetDoctorAvailabilities", controller = "Availabilities"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetDoctorAvailabilities(System.Guid) on controller api_econsulta.Controllers.AvailabilitiesController (api-econsulta).
+2025-05-16 19:26:44.709 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[@__doctorId_0='91f87cb9-fe2d-494e-a73f-2353e23c7b20'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."DoctorId", a."EndTime", a."StartTime", d."Id", d."DoctorName", d."Email", d."PasswordHash", d."Specialty"
+FROM "Availabilities" AS a
+INNER JOIN "DoctorUsers" AS d ON a."DoctorId" = d."Id"
+WHERE a."DoctorId" = @__doctorId_0
+2025-05-16 19:26:44.712 -03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[api_econsulta.DTOs.AvailabilityDto, api-econsulta, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-05-16 19:26:44.714 -03:00 [INF] Executed action api_econsulta.Controllers.AvailabilitiesController.GetDoctorAvailabilities (api-econsulta) in 7.1955ms
+2025-05-16 19:26:44.715 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetDoctorAvailabilities (api-econsulta)'
+2025-05-16 19:26:44.716 -03:00 [INF] HTTP GET /api/Availabilities/doctor/91f87cb9-fe2d-494e-a73f-2353e23c7b20 responded 200 in 13.9360 ms
+2025-05-16 19:26:44.718 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/api/Availabilities/doctor/91f87cb9-fe2d-494e-a73f-2353e23c7b20 - 200 null application/json; charset=utf-8 18.9817ms
+2025-05-16 19:26:54.705 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/api/Availabilities/available - null null
+2025-05-16 19:26:54.708 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta)'
+2025-05-16 19:26:54.711 -03:00 [INF] Route matched with {action = "GetAvailableAvailabilities", controller = "Availabilities"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAvailableAvailabilities() on controller api_econsulta.Controllers.AvailabilitiesController (api-econsulta).
+2025-05-16 19:26:54.731 -03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__now_0='2025-05-16T22:26:54.7153074Z' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."DoctorId", a."EndTime", a."StartTime", d."Id", d."DoctorName", d."Email", d."PasswordHash", d."Specialty"
+FROM "Availabilities" AS a
+INNER JOIN "DoctorUsers" AS d ON a."DoctorId" = d."Id"
+WHERE a."StartTime" > @__now_0 AND NOT EXISTS (
+    SELECT 1
+    FROM "Appointments" AS a0
+    WHERE a0."AvailabilityId" = a."Id")
+2025-05-16 19:26:54.734 -03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[api_econsulta.DTOs.AvailabilityDto, api-econsulta, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-05-16 19:26:54.736 -03:00 [INF] Executed action api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta) in 22.773ms
+2025-05-16 19:26:54.738 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta)'
+2025-05-16 19:26:54.739 -03:00 [INF] HTTP GET /api/Availabilities/available responded 200 in 31.3402 ms
+2025-05-16 19:26:54.741 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/api/Availabilities/available - 200 null application/json; charset=utf-8 36.1472ms
+2025-05-16 19:27:06.419 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/api/Availabilities/doctor/91f87cb9-fe2d-494e-a73f-2353e23c7b20 - null null
+2025-05-16 19:27:06.422 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetDoctorAvailabilities (api-econsulta)'
+2025-05-16 19:27:06.424 -03:00 [INF] Route matched with {action = "GetDoctorAvailabilities", controller = "Availabilities"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetDoctorAvailabilities(System.Guid) on controller api_econsulta.Controllers.AvailabilitiesController (api-econsulta).
+2025-05-16 19:27:06.428 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[@__doctorId_0='91f87cb9-fe2d-494e-a73f-2353e23c7b20'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."DoctorId", a."EndTime", a."StartTime", d."Id", d."DoctorName", d."Email", d."PasswordHash", d."Specialty"
+FROM "Availabilities" AS a
+INNER JOIN "DoctorUsers" AS d ON a."DoctorId" = d."Id"
+WHERE a."DoctorId" = @__doctorId_0
+2025-05-16 19:27:06.431 -03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[api_econsulta.DTOs.AvailabilityDto, api-econsulta, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-05-16 19:27:06.433 -03:00 [INF] Executed action api_econsulta.Controllers.AvailabilitiesController.GetDoctorAvailabilities (api-econsulta) in 6.7408ms
+2025-05-16 19:27:06.435 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetDoctorAvailabilities (api-econsulta)'
+2025-05-16 19:27:06.436 -03:00 [INF] HTTP GET /api/Availabilities/doctor/91f87cb9-fe2d-494e-a73f-2353e23c7b20 responded 200 in 13.6927 ms
+2025-05-16 19:27:06.438 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/api/Availabilities/doctor/91f87cb9-fe2d-494e-a73f-2353e23c7b20 - 200 null application/json; charset=utf-8 18.5585ms
+2025-05-16 19:29:22.045 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/api/Availabilities/doctor/91f87cb9-fe2d-494e-a73f-2353e23c7b20 - null null
+2025-05-16 19:29:22.047 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetDoctorAvailabilities (api-econsulta)'
+2025-05-16 19:29:22.048 -03:00 [INF] Route matched with {action = "GetDoctorAvailabilities", controller = "Availabilities"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetDoctorAvailabilities(System.Guid) on controller api_econsulta.Controllers.AvailabilitiesController (api-econsulta).
+2025-05-16 19:29:22.052 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[@__doctorId_0='91f87cb9-fe2d-494e-a73f-2353e23c7b20'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."DoctorId", a."EndTime", a."StartTime", d."Id", d."DoctorName", d."Email", d."PasswordHash", d."Specialty"
+FROM "Availabilities" AS a
+INNER JOIN "DoctorUsers" AS d ON a."DoctorId" = d."Id"
+WHERE a."DoctorId" = @__doctorId_0
+2025-05-16 19:29:22.055 -03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[api_econsulta.DTOs.AvailabilityDto, api-econsulta, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-05-16 19:29:22.056 -03:00 [INF] Executed action api_econsulta.Controllers.AvailabilitiesController.GetDoctorAvailabilities (api-econsulta) in 5.9706ms
+2025-05-16 19:29:22.058 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetDoctorAvailabilities (api-econsulta)'
+2025-05-16 19:29:22.059 -03:00 [INF] HTTP GET /api/Availabilities/doctor/91f87cb9-fe2d-494e-a73f-2353e23c7b20 responded 200 in 12.0313 ms
+2025-05-16 19:29:22.062 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/api/Availabilities/doctor/91f87cb9-fe2d-494e-a73f-2353e23c7b20 - 200 null application/json; charset=utf-8 17.0844ms
+2025-05-16 19:30:18.841 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/index.html - null null
+2025-05-16 19:30:18.843 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/index.html - 200 null text/html;charset=utf-8 2.7714ms
+2025-05-16 19:30:18.855 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - null null
+2025-05-16 19:30:18.859 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - 200 16481 application/javascript; charset=utf-8 4.7025ms
+2025-05-16 19:30:18.915 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - null null
+2025-05-16 19:30:18.920 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 5.3672ms
+2025-05-16 19:30:30.184 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/index.html - null null
+2025-05-16 19:30:30.187 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/index.html - 200 null text/html;charset=utf-8 2.6028ms
+2025-05-16 19:30:30.193 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/index.html - null null
+2025-05-16 19:30:30.196 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/index.html - 200 null text/html;charset=utf-8 2.8613ms
+2025-05-16 19:30:30.209 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - null null
+2025-05-16 19:30:30.213 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - 200 16481 application/javascript; charset=utf-8 3.6844ms
+2025-05-16 19:30:30.262 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - null null
+2025-05-16 19:30:30.268 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 6.0396ms
+2025-05-16 19:30:33.829 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/index.html - null null
+2025-05-16 19:30:33.832 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/index.html - 200 null text/html;charset=utf-8 3.2335ms
+2025-05-16 19:30:33.837 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/index.html - null null
+2025-05-16 19:30:33.840 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/index.html - 200 null text/html;charset=utf-8 2.8864ms
+2025-05-16 19:30:33.850 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - null null
+2025-05-16 19:30:33.853 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - 200 16481 application/javascript; charset=utf-8 3.5995ms
+2025-05-16 19:30:33.890 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - null null
+2025-05-16 19:30:33.896 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 5.6328ms
+2025-05-16 19:30:44.514 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/index.html - null null
+2025-05-16 19:30:44.517 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/index.html - 200 null text/html;charset=utf-8 3.2584ms
+2025-05-16 19:30:44.519 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/index.html - null null
+2025-05-16 19:30:44.524 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/index.html - 200 null text/html;charset=utf-8 4.4928ms
+2025-05-16 19:30:44.535 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - null null
+2025-05-16 19:30:44.538 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - 200 16481 application/javascript; charset=utf-8 3.3615ms
+2025-05-16 19:30:44.577 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - null null
+2025-05-16 19:30:44.582 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 5.1978ms
+2025-05-16 19:47:08.555 -03:00 [INF] Iniciando a API eConsulta
+2025-05-16 19:47:08.607 -03:00 [INF] User profile is available. Using 'C:\Users\danie\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-05-16 19:47:08.643 -03:00 [WRN] The WebRootPath was not found: D:\projetos\api-econsulta\wwwroot. Static files may be unavailable.
+2025-05-16 19:47:08.706 -03:00 [INF] Now listening on: https://localhost:7083
+2025-05-16 19:47:08.707 -03:00 [INF] Now listening on: http://localhost:5211
+2025-05-16 19:47:08.709 -03:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-05-16 19:47:08.710 -03:00 [INF] Hosting environment: Development
+2025-05-16 19:47:08.711 -03:00 [INF] Content root path: D:\projetos\api-econsulta
+2025-05-16 19:47:15.896 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/index.html - null null
+2025-05-16 19:47:15.964 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/index.html - 200 null text/html;charset=utf-8 68.9777ms
+2025-05-16 19:47:15.979 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - null null
+2025-05-16 19:47:15.987 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - 200 16481 application/javascript; charset=utf-8 7.7343ms
+2025-05-16 19:47:16.020 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - null null
+2025-05-16 19:47:16.102 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 82.1453ms
+2025-05-16 19:47:35.467 -03:00 [INF] Request starting HTTP/2 POST https://localhost:7083/api/auth/login - application/json 56
+2025-05-16 19:47:35.473 -03:00 [INF] CORS policy execution successful.
+2025-05-16 19:47:35.507 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AuthController.Login (api-econsulta)'
+2025-05-16 19:47:35.520 -03:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(api_econsulta.DTOs.LoginDto) on controller api_econsulta.Controllers.AuthController (api-econsulta).
+2025-05-16 19:47:35.890 -03:00 [WRN] Sensitive data logging is enabled. Log entries and exception messages may include sensitive application data; this mode should only be enabled during development.
+2025-05-16 19:47:36.255 -03:00 [INF] Executed DbCommand (30ms) [Parameters=[@__lowerEmail_0='teste@teste.com'], CommandType='"Text"', CommandTimeout='30']
+SELECT d."Id", d."DoctorName", d."Email", d."PasswordHash", d."Specialty"
+FROM "DoctorUsers" AS d
+WHERE d."Email" = @__lowerEmail_0
+LIMIT 1
+2025-05-16 19:47:36.838 -03:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType3`2[[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2025-05-16 19:47:36.849 -03:00 [INF] Executed action api_econsulta.Controllers.AuthController.Login (api-econsulta) in 1325.2104ms
+2025-05-16 19:47:36.851 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AuthController.Login (api-econsulta)'
+2025-05-16 19:47:36.854 -03:00 [INF] HTTP POST /api/auth/login responded 200 in 1360.5522 ms
+2025-05-16 19:47:36.860 -03:00 [INF] Request finished HTTP/2 POST https://localhost:7083/api/auth/login - 200 null application/json; charset=utf-8 1392.4457ms
+2025-05-16 19:48:04.331 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/api/Availabilities/doctor/91f87cb9-fe2d-494e-a73f-2353e23c7b20 - null null
+2025-05-16 19:48:04.360 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetDoctorAvailabilities (api-econsulta)'
+2025-05-16 19:48:04.364 -03:00 [INF] Route matched with {action = "GetDoctorAvailabilities", controller = "Availabilities"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetDoctorAvailabilities(System.Guid) on controller api_econsulta.Controllers.AvailabilitiesController (api-econsulta).
+2025-05-16 19:48:04.433 -03:00 [ERR] Failed executing DbCommand (6ms) [Parameters=[@__doctorId_0='91f87cb9-fe2d-494e-a73f-2353e23c7b20'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."DoctorUserId", a."End", a."IsBooked", a."Start", d."Id", d."DoctorName", d."Email", d."PasswordHash", d."Specialty"
+FROM "Availabilities" AS a
+INNER JOIN "DoctorUsers" AS d ON a."DoctorUserId" = d."Id"
+WHERE a."DoctorUserId" = @__doctorId_0
+2025-05-16 19:48:04.862 -03:00 [ERR] An exception occurred while iterating over the results of a query for context type 'api_econsulta.Data.EconsultaDbContext'.
+Npgsql.PostgresException (0x80004005): 42703: column a.DoctorUserId does not exist
+
+POSITION: 197
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.<>c__DisplayClass30_0`2.<<ExecuteAsync>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+  Exception data:
+    Severity: ERROR
+    SqlState: 42703
+    MessageText: column a.DoctorUserId does not exist
+    Position: 197
+    File: parse_relation.c
+    Line: 3716
+    Routine: errorMissingColumn
+Npgsql.PostgresException (0x80004005): 42703: column a.DoctorUserId does not exist
+
+POSITION: 197
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.<>c__DisplayClass30_0`2.<<ExecuteAsync>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+  Exception data:
+    Severity: ERROR
+    SqlState: 42703
+    MessageText: column a.DoctorUserId does not exist
+    Position: 197
+    File: parse_relation.c
+    Line: 3716
+    Routine: errorMissingColumn
+2025-05-16 19:48:04.879 -03:00 [INF] Executing ObjectResult, writing value of type '<>f__AnonymousType5`1[[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2025-05-16 19:48:04.881 -03:00 [INF] Executed action api_econsulta.Controllers.AvailabilitiesController.GetDoctorAvailabilities (api-econsulta) in 515.673ms
+2025-05-16 19:48:04.883 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetDoctorAvailabilities (api-econsulta)'
+2025-05-16 19:48:04.884 -03:00 [ERR] HTTP GET /api/Availabilities/doctor/91f87cb9-fe2d-494e-a73f-2353e23c7b20 responded 500 in 549.2979 ms
+2025-05-16 19:48:04.886 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/api/Availabilities/doctor/91f87cb9-fe2d-494e-a73f-2353e23c7b20 - 500 null application/json; charset=utf-8 555.4915ms
+2025-05-16 19:49:10.785 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/index.html - null null
+2025-05-16 19:49:10.789 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/index.html - 200 null text/html;charset=utf-8 4.2659ms
+2025-05-16 19:49:10.799 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - null null
+2025-05-16 19:49:10.803 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - 200 16481 application/javascript; charset=utf-8 3.3745ms
+2025-05-16 19:49:10.987 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - null null
+2025-05-16 19:49:10.996 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 9.1707ms
+2025-05-16 19:50:59.498 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/index.html - null null
+2025-05-16 19:50:59.502 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/index.html - 200 null text/html;charset=utf-8 3.5497ms
+2025-05-16 19:50:59.513 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - null null
+2025-05-16 19:50:59.516 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - 200 16481 application/javascript; charset=utf-8 3.3429ms
+2025-05-16 19:50:59.568 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - null null
+2025-05-16 19:50:59.575 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 7.509ms
+2025-05-16 19:52:03.364 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/index.html - null null
+2025-05-16 19:52:03.367 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/index.html - 200 null text/html;charset=utf-8 2.9232ms
+2025-05-16 19:52:03.377 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - null null
+2025-05-16 19:52:03.380 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - 200 16481 application/javascript; charset=utf-8 2.7683ms
+2025-05-16 19:52:03.429 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - null null
+2025-05-16 19:52:03.435 -03:00 [ERR] An unhandled exception has occurred while executing the request.
+Swashbuckle.AspNetCore.SwaggerGen.SwaggerGeneratorException: Failed to generate Operation for action - api_econsulta.Controllers.DoctorUserController.GetAll (api-econsulta). See inner exception
+ ---> Swashbuckle.AspNetCore.SwaggerGen.SwaggerGeneratorException: Failed to generate schema for type - System.Collections.Generic.IEnumerable`1[api_econsulta.Models.DoctorUser]. See inner exception
+ ---> System.BadImageFormatException: The signature is incorrect. The format of the file 'D:\projetos\api-econsulta\bin\Debug\net9.0\api-econsulta.dll' is invalid.
+   at System.Signature.GetSignature(Void* pCorSig, Int32 cCorSig, RuntimeFieldHandleInternal fieldHandle, IRuntimeMethodInfo methodHandle, RuntimeType declaringType)
+   at System.Reflection.RuntimeConstructorInfo.<get_Signature>g__LazyCreateSignature|21_0()
+   at System.Linq.Enumerable.OrderedIterator`2.TryGetFirst(Boolean& found)
+   at System.Linq.Enumerable.FirstOrDefault[TSource](IEnumerable`1 source)
+   at Swashbuckle.AspNetCore.SwaggerGen.JsonSerializerDataContractResolver.GetDataPropertiesFor(Type objectType, Type& extensionDataType)
+   at Swashbuckle.AspNetCore.SwaggerGen.JsonSerializerDataContractResolver.GetDataContractForType(Type type)
+   at Swashbuckle.AspNetCore.SwaggerGen.SchemaGenerator.GenerateSchema(Type modelType, SchemaRepository schemaRepository, MemberInfo memberInfo, ParameterInfo parameterInfo, ApiParameterRouteInfo routeInfo)
+   at Swashbuckle.AspNetCore.SwaggerGen.SchemaGenerator.CreateArraySchema(DataContract dataContract, SchemaRepository schemaRepository)
+   at Swashbuckle.AspNetCore.SwaggerGen.SchemaGenerator.<>c__DisplayClass12_0.<GenerateConcreteSchema>b__1()
+   at Swashbuckle.AspNetCore.SwaggerGen.SchemaGenerator.GenerateConcreteSchema(DataContract dataContract, SchemaRepository schemaRepository)
+   at Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator.GenerateSchema(Type type, SchemaRepository schemaRepository, PropertyInfo propertyInfo, ParameterInfo parameterInfo, ApiParameterRouteInfo routeInfo)
+   --- End of inner exception stack trace ---
+   at Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator.GenerateSchema(Type type, SchemaRepository schemaRepository, PropertyInfo propertyInfo, ParameterInfo parameterInfo, ApiParameterRouteInfo routeInfo)
+   at Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator.CreateResponseMediaType(Type modelType, SchemaRepository schemaRespository)
+   at Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator.<>c__DisplayClass42_0.<GenerateResponse>b__2(String contentType)
+   at System.Linq.Enumerable.ToDictionary[TSource,TKey,TElement](IEnumerable`1 source, Func`2 keySelector, Func`2 elementSelector, IEqualityComparer`1 comparer)
+   at System.Linq.Enumerable.ToDictionary[TSource,TKey,TElement](IEnumerable`1 source, Func`2 keySelector, Func`2 elementSelector)
+   at Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator.GenerateResponse(ApiDescription apiDescription, SchemaRepository schemaRepository, String statusCode, ApiResponseType apiResponseType)
+   at Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator.GenerateResponses(ApiDescription apiDescription, SchemaRepository schemaRepository)
+   at Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator.GenerateOperationAsync(OpenApiDocument document, ApiDescription apiDescription, SchemaRepository schemaRepository, Func`3 parametersGenerator, Func`3 bodyGenerator, Func`3 applyFilters)
+   --- End of inner exception stack trace ---
+   at Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator.GenerateOperationAsync(OpenApiDocument document, ApiDescription apiDescription, SchemaRepository schemaRepository, Func`3 parametersGenerator, Func`3 bodyGenerator, Func`3 applyFilters)
+   at Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator.GenerateOperationAsync(OpenApiDocument document, ApiDescription apiDescription, SchemaRepository schemaRepository)
+   at Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator.GenerateOperationsAsync(OpenApiDocument document, IEnumerable`1 apiDescriptions, SchemaRepository schemaRepository)
+   at Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator.GeneratePathsAsync(OpenApiDocument document, IEnumerable`1 apiDescriptions, SchemaRepository schemaRepository, Func`4 operationsGenerator)
+   at Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator.GeneratePathsAsync(OpenApiDocument document, IEnumerable`1 apiDescriptions, SchemaRepository schemaRepository)
+   at Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator.GetSwaggerAsync(String documentName, String host, String basePath)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-05-16 19:52:03.448 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - 500 null text/plain; charset=utf-8 19.6781ms
+2025-05-16 19:52:21.241 -03:00 [INF] Application is shutting down...
+2025-05-16 19:52:28.902 -03:00 [WRN] Sensitive data logging is enabled. Log entries and exception messages may include sensitive application data; this mode should only be enabled during development.
+2025-05-16 19:52:38.773 -03:00 [WRN] Sensitive data logging is enabled. Log entries and exception messages may include sensitive application data; this mode should only be enabled during development.
+2025-05-16 19:52:38.970 -03:00 [INF] Executed DbCommand (11ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2025-05-16 19:52:39.104 -03:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE IF NOT EXISTS "__EFMigrationsHistory" (
+    "MigrationId" character varying(150) NOT NULL,
+    "ProductVersion" character varying(32) NOT NULL,
+    CONSTRAINT "PK___EFMigrationsHistory" PRIMARY KEY ("MigrationId")
+);
+2025-05-16 19:52:39.110 -03:00 [INF] Acquiring an exclusive lock for migration application. See https://aka.ms/efcore-docs-migrations-lock for more information if this takes too long.
+2025-05-16 19:52:39.112 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+LOCK TABLE "__EFMigrationsHistory" IN ACCESS EXCLUSIVE MODE
+2025-05-16 19:52:39.115 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2025-05-16 19:52:39.122 -03:00 [INF] Applying migration '20250516225229_UpdateDatabaseeeee'.
+2025-05-16 19:52:39.132 -03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "Availabilities" DROP CONSTRAINT "FK_Availabilities_DoctorUsers_DoctorId";
+2025-05-16 19:52:39.136 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "PatientUsers" RENAME COLUMN "DoctorName" TO "PatientName";
+2025-05-16 19:52:39.139 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "Availabilities" RENAME COLUMN "StartTime" TO "Start";
+2025-05-16 19:52:39.142 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "Availabilities" RENAME COLUMN "EndTime" TO "End";
+2025-05-16 19:52:39.146 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "Availabilities" RENAME COLUMN "DoctorId" TO "DoctorUserId";
+2025-05-16 19:52:39.150 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER INDEX "IX_Availabilities_DoctorId" RENAME TO "IX_Availabilities_DoctorUserId";
+2025-05-16 19:52:39.162 -03:00 [INF] Executed DbCommand (10ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "Availabilities" ADD "IsBooked" boolean NOT NULL DEFAULT FALSE;
+2025-05-16 19:52:39.168 -03:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "Availabilities" ADD CONSTRAINT "FK_Availabilities_DoctorUsers_DoctorUserId" FOREIGN KEY ("DoctorUserId") REFERENCES "DoctorUsers" ("Id") ON DELETE CASCADE;
+2025-05-16 19:52:39.172 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+VALUES ('20250516225229_UpdateDatabaseeeee', '9.0.5');
+2025-05-16 19:52:48.830 -03:00 [INF] Iniciando a API eConsulta
+2025-05-16 19:52:48.876 -03:00 [INF] User profile is available. Using 'C:\Users\danie\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-05-16 19:52:48.913 -03:00 [WRN] The WebRootPath was not found: D:\projetos\api-econsulta\wwwroot. Static files may be unavailable.
+2025-05-16 19:52:48.985 -03:00 [INF] Now listening on: https://localhost:7083
+2025-05-16 19:52:48.986 -03:00 [INF] Now listening on: http://localhost:5211
+2025-05-16 19:52:48.988 -03:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-05-16 19:52:48.989 -03:00 [INF] Hosting environment: Development
+2025-05-16 19:52:48.990 -03:00 [INF] Content root path: D:\projetos\api-econsulta
+2025-05-16 19:52:58.990 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/index.html - null null
+2025-05-16 19:52:59.059 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/index.html - 200 null text/html;charset=utf-8 69.3912ms
+2025-05-16 19:52:59.072 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - null null
+2025-05-16 19:52:59.080 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - 200 16481 application/javascript; charset=utf-8 7.856ms
+2025-05-16 19:52:59.141 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - null null
+2025-05-16 19:52:59.219 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 77.6655ms
+2025-05-16 19:53:17.145 -03:00 [INF] Request starting HTTP/2 POST https://localhost:7083/api/auth/login - application/json 56
+2025-05-16 19:53:17.150 -03:00 [INF] CORS policy execution successful.
+2025-05-16 19:53:17.186 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AuthController.Login (api-econsulta)'
+2025-05-16 19:53:17.198 -03:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(api_econsulta.DTOs.LoginDto) on controller api_econsulta.Controllers.AuthController (api-econsulta).
+2025-05-16 19:53:17.556 -03:00 [WRN] Sensitive data logging is enabled. Log entries and exception messages may include sensitive application data; this mode should only be enabled during development.
+2025-05-16 19:53:17.922 -03:00 [INF] Executed DbCommand (30ms) [Parameters=[@__lowerEmail_0='teste@teste.com'], CommandType='"Text"', CommandTimeout='30']
+SELECT d."Id", d."DoctorName", d."Email", d."PasswordHash", d."Specialty"
+FROM "DoctorUsers" AS d
+WHERE d."Email" = @__lowerEmail_0
+LIMIT 1
+2025-05-16 19:53:18.504 -03:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType3`2[[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2025-05-16 19:53:18.515 -03:00 [INF] Executed action api_econsulta.Controllers.AuthController.Login (api-econsulta) in 1313.5643ms
+2025-05-16 19:53:18.517 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AuthController.Login (api-econsulta)'
+2025-05-16 19:53:18.520 -03:00 [INF] HTTP POST /api/auth/login responded 200 in 1348.3116 ms
+2025-05-16 19:53:18.527 -03:00 [INF] Request finished HTTP/2 POST https://localhost:7083/api/auth/login - 200 null application/json; charset=utf-8 1381.2203ms
+2025-05-16 19:53:42.692 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/api/Availabilities/doctor/91f87cb9-fe2d-494e-a73f-2353e23c7b20 - null null
+2025-05-16 19:53:42.721 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetDoctorAvailabilities (api-econsulta)'
+2025-05-16 19:53:42.725 -03:00 [INF] Route matched with {action = "GetDoctorAvailabilities", controller = "Availabilities"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetDoctorAvailabilities(System.Guid) on controller api_econsulta.Controllers.AvailabilitiesController (api-econsulta).
+2025-05-16 19:53:42.789 -03:00 [INF] Executed DbCommand (3ms) [Parameters=[@__doctorId_0='91f87cb9-fe2d-494e-a73f-2353e23c7b20'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."DoctorUserId", a."End", a."IsBooked", a."Start", d."Id", d."DoctorName", d."Email", d."PasswordHash", d."Specialty"
+FROM "Availabilities" AS a
+INNER JOIN "DoctorUsers" AS d ON a."DoctorUserId" = d."Id"
+WHERE a."DoctorUserId" = @__doctorId_0
+2025-05-16 19:53:42.795 -03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[api_econsulta.DTOs.AvailabilityDto, api-econsulta, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-05-16 19:53:42.803 -03:00 [INF] Executed action api_econsulta.Controllers.AvailabilitiesController.GetDoctorAvailabilities (api-econsulta) in 76.3912ms
+2025-05-16 19:53:42.805 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetDoctorAvailabilities (api-econsulta)'
+2025-05-16 19:53:42.806 -03:00 [INF] HTTP GET /api/Availabilities/doctor/91f87cb9-fe2d-494e-a73f-2353e23c7b20 responded 200 in 110.4643 ms
+2025-05-16 19:53:42.809 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/api/Availabilities/doctor/91f87cb9-fe2d-494e-a73f-2353e23c7b20 - 200 null application/json; charset=utf-8 116.7808ms
+2025-05-16 19:53:50.206 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/api/Availabilities/available - null null
+2025-05-16 19:53:50.212 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta)'
+2025-05-16 19:53:50.214 -03:00 [INF] Route matched with {action = "GetAvailableAvailabilities", controller = "Availabilities"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAvailableAvailabilities() on controller api_econsulta.Controllers.AvailabilitiesController (api-econsulta).
+2025-05-16 19:53:50.284 -03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__now_0='2025-05-16T22:53:50.2195170Z' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."DoctorUserId", a."End", a."IsBooked", a."Start", d."Id", d."DoctorName", d."Email", d."PasswordHash", d."Specialty"
+FROM "Availabilities" AS a
+INNER JOIN "DoctorUsers" AS d ON a."DoctorUserId" = d."Id"
+WHERE a."Start" > @__now_0 AND NOT EXISTS (
+    SELECT 1
+    FROM "Appointments" AS a0
+    WHERE a0."AvailabilityId" = a."Id")
+2025-05-16 19:53:50.287 -03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[api_econsulta.DTOs.AvailabilityDto, api-econsulta, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-05-16 19:53:50.288 -03:00 [INF] Executed action api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta) in 71.9878ms
+2025-05-16 19:53:50.290 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta)'
+2025-05-16 19:53:50.291 -03:00 [INF] HTTP GET /api/Availabilities/available responded 200 in 81.1007 ms
+2025-05-16 19:53:50.294 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/api/Availabilities/available - 200 null application/json; charset=utf-8 87.1401ms
+2025-05-16 19:56:30.146 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/index.html - null null
+2025-05-16 19:56:30.149 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/index.html - 200 null text/html;charset=utf-8 2.9738ms
+2025-05-16 19:56:30.166 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - null null
+2025-05-16 19:56:30.169 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - 200 16481 application/javascript; charset=utf-8 3.1275ms
+2025-05-16 19:56:30.225 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - null null
+2025-05-16 19:56:30.232 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 7.8169ms
+2025-05-16 19:56:39.043 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/index.html - null null
+2025-05-16 19:56:39.045 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/index.html - 200 null text/html;charset=utf-8 2.6589ms
+2025-05-16 19:56:39.059 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - null null
+2025-05-16 19:56:39.062 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - 200 16481 application/javascript; charset=utf-8 3.3187ms
+2025-05-16 19:56:39.102 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - null null
+2025-05-16 19:56:39.115 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 13.1253ms
+2025-05-16 19:57:03.314 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/index.html - null null
+2025-05-16 19:57:03.319 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/index.html - 200 null text/html;charset=utf-8 5.0376ms
+2025-05-16 19:57:03.329 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - null null
+2025-05-16 19:57:03.331 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - 200 16481 application/javascript; charset=utf-8 2.7029ms
+2025-05-16 19:57:03.381 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - null null
+2025-05-16 19:57:03.388 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 6.8029ms
+2025-05-16 19:58:10.008 -03:00 [INF] Iniciando a API eConsulta
+2025-05-16 19:58:10.063 -03:00 [INF] User profile is available. Using 'C:\Users\danie\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-05-16 19:58:10.101 -03:00 [WRN] The WebRootPath was not found: D:\projetos\api-econsulta\wwwroot. Static files may be unavailable.
+2025-05-16 19:58:10.168 -03:00 [INF] Now listening on: https://localhost:7083
+2025-05-16 19:58:10.169 -03:00 [INF] Now listening on: http://localhost:5211
+2025-05-16 19:58:10.171 -03:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-05-16 19:58:10.172 -03:00 [INF] Hosting environment: Development
+2025-05-16 19:58:10.173 -03:00 [INF] Content root path: D:\projetos\api-econsulta
+2025-05-16 19:58:18.300 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/index.html - null null
+2025-05-16 19:58:18.369 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/index.html - 200 null text/html;charset=utf-8 69.6574ms
+2025-05-16 19:58:18.382 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - null null
+2025-05-16 19:58:18.389 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - 200 16481 application/javascript; charset=utf-8 6.9676ms
+2025-05-16 19:58:18.432 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - null null
+2025-05-16 19:58:18.509 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 77.1303ms
+2025-05-16 19:58:34.508 -03:00 [INF] Request starting HTTP/2 POST https://localhost:7083/api/auth/login - application/json 56
+2025-05-16 19:58:34.513 -03:00 [INF] CORS policy execution successful.
+2025-05-16 19:58:34.549 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AuthController.Login (api-econsulta)'
+2025-05-16 19:58:34.561 -03:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(api_econsulta.DTOs.LoginDto) on controller api_econsulta.Controllers.AuthController (api-econsulta).
+2025-05-16 19:58:34.921 -03:00 [WRN] Sensitive data logging is enabled. Log entries and exception messages may include sensitive application data; this mode should only be enabled during development.
+2025-05-16 19:58:35.301 -03:00 [INF] Executed DbCommand (30ms) [Parameters=[@__lowerEmail_0='teste@teste.com'], CommandType='"Text"', CommandTimeout='30']
+SELECT d."Id", d."DoctorName", d."Email", d."PasswordHash", d."Specialty"
+FROM "DoctorUsers" AS d
+WHERE d."Email" = @__lowerEmail_0
+LIMIT 1
+2025-05-16 19:58:35.883 -03:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType3`2[[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2025-05-16 19:58:35.894 -03:00 [INF] Executed action api_econsulta.Controllers.AuthController.Login (api-econsulta) in 1329.4629ms
+2025-05-16 19:58:35.896 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AuthController.Login (api-econsulta)'
+2025-05-16 19:58:35.899 -03:00 [INF] HTTP POST /api/auth/login responded 200 in 1363.5860 ms
+2025-05-16 19:58:35.905 -03:00 [INF] Request finished HTTP/2 POST https://localhost:7083/api/auth/login - 200 null application/json; charset=utf-8 1397.9566ms
+2025-05-16 19:59:06.165 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/api/Availabilities/doctor/91f87cb9-fe2d-494e-a73f-2353e23c7b20 - null null
+2025-05-16 19:59:06.195 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetDoctorAvailabilities (api-econsulta)'
+2025-05-16 19:59:06.199 -03:00 [INF] Route matched with {action = "GetDoctorAvailabilities", controller = "Availabilities"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetDoctorAvailabilities(System.Guid) on controller api_econsulta.Controllers.AvailabilitiesController (api-econsulta).
+2025-05-16 19:59:06.262 -03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__doctorId_0='91f87cb9-fe2d-494e-a73f-2353e23c7b20'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."DoctorUserId", a."End", a."IsBooked", a."Start", d."Id", d."DoctorName", d."Email", d."PasswordHash", d."Specialty"
+FROM "Availabilities" AS a
+INNER JOIN "DoctorUsers" AS d ON a."DoctorUserId" = d."Id"
+WHERE a."DoctorUserId" = @__doctorId_0
+2025-05-16 19:59:06.268 -03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[api_econsulta.DTOs.AvailabilityDto, api-econsulta, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-05-16 19:59:06.276 -03:00 [INF] Executed action api_econsulta.Controllers.AvailabilitiesController.GetDoctorAvailabilities (api-econsulta) in 75.4468ms
+2025-05-16 19:59:06.278 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetDoctorAvailabilities (api-econsulta)'
+2025-05-16 19:59:06.279 -03:00 [INF] HTTP GET /api/Availabilities/doctor/91f87cb9-fe2d-494e-a73f-2353e23c7b20 responded 200 in 109.7231 ms
+2025-05-16 19:59:06.281 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/api/Availabilities/doctor/91f87cb9-fe2d-494e-a73f-2353e23c7b20 - 200 null application/json; charset=utf-8 115.8494ms
+2025-05-16 19:59:19.111 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/api/Availabilities/doctor/ae8a97ab-b0f2-40c4-9c4b-d222b1474f49 - null null
+2025-05-16 19:59:19.117 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetDoctorAvailabilities (api-econsulta)'
+2025-05-16 19:59:19.118 -03:00 [INF] Route matched with {action = "GetDoctorAvailabilities", controller = "Availabilities"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetDoctorAvailabilities(System.Guid) on controller api_econsulta.Controllers.AvailabilitiesController (api-econsulta).
+2025-05-16 19:59:19.169 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[@__doctorId_0='ae8a97ab-b0f2-40c4-9c4b-d222b1474f49'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."DoctorUserId", a."End", a."IsBooked", a."Start", d."Id", d."DoctorName", d."Email", d."PasswordHash", d."Specialty"
+FROM "Availabilities" AS a
+INNER JOIN "DoctorUsers" AS d ON a."DoctorUserId" = d."Id"
+WHERE a."DoctorUserId" = @__doctorId_0
+2025-05-16 19:59:19.188 -03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[api_econsulta.DTOs.AvailabilityDto, api-econsulta, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-05-16 19:59:19.192 -03:00 [INF] Executed action api_econsulta.Controllers.AvailabilitiesController.GetDoctorAvailabilities (api-econsulta) in 71.1385ms
+2025-05-16 19:59:19.193 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetDoctorAvailabilities (api-econsulta)'
+2025-05-16 19:59:19.194 -03:00 [INF] HTTP GET /api/Availabilities/doctor/ae8a97ab-b0f2-40c4-9c4b-d222b1474f49 responded 200 in 79.6525 ms
+2025-05-16 19:59:19.196 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/api/Availabilities/doctor/ae8a97ab-b0f2-40c4-9c4b-d222b1474f49 - 200 null application/json; charset=utf-8 84.828ms
+2025-05-16 20:00:02.000 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/api/Availabilities/doctor/ae8a97ab-b0f2-40c4-9c4b-d222b1474f49 - null null
+2025-05-16 20:00:02.004 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetDoctorAvailabilities (api-econsulta)'
+2025-05-16 20:00:02.005 -03:00 [INF] Route matched with {action = "GetDoctorAvailabilities", controller = "Availabilities"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetDoctorAvailabilities(System.Guid) on controller api_econsulta.Controllers.AvailabilitiesController (api-econsulta).
+2025-05-16 20:00:02.010 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[@__doctorId_0='ae8a97ab-b0f2-40c4-9c4b-d222b1474f49'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."DoctorUserId", a."End", a."IsBooked", a."Start", d."Id", d."DoctorName", d."Email", d."PasswordHash", d."Specialty"
+FROM "Availabilities" AS a
+INNER JOIN "DoctorUsers" AS d ON a."DoctorUserId" = d."Id"
+WHERE a."DoctorUserId" = @__doctorId_0
+2025-05-16 20:00:02.013 -03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[api_econsulta.DTOs.AvailabilityDto, api-econsulta, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-05-16 20:00:02.015 -03:00 [INF] Executed action api_econsulta.Controllers.AvailabilitiesController.GetDoctorAvailabilities (api-econsulta) in 7.7071ms
+2025-05-16 20:00:02.016 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetDoctorAvailabilities (api-econsulta)'
+2025-05-16 20:00:02.017 -03:00 [INF] HTTP GET /api/Availabilities/doctor/ae8a97ab-b0f2-40c4-9c4b-d222b1474f49 responded 200 in 14.3382 ms
+2025-05-16 20:00:02.019 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/api/Availabilities/doctor/ae8a97ab-b0f2-40c4-9c4b-d222b1474f49 - 200 null application/json; charset=utf-8 19.0956ms
+2025-05-16 20:00:27.845 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/api/Availabilities/doctor/ae8a97ab-b0f2-40c4-9c4b-d222b1474f49 - null null
+2025-05-16 20:00:27.848 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetDoctorAvailabilities (api-econsulta)'
+2025-05-16 20:00:27.849 -03:00 [INF] Route matched with {action = "GetDoctorAvailabilities", controller = "Availabilities"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetDoctorAvailabilities(System.Guid) on controller api_econsulta.Controllers.AvailabilitiesController (api-econsulta).
+2025-05-16 20:00:27.854 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[@__doctorId_0='ae8a97ab-b0f2-40c4-9c4b-d222b1474f49'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."DoctorUserId", a."End", a."IsBooked", a."Start", d."Id", d."DoctorName", d."Email", d."PasswordHash", d."Specialty"
+FROM "Availabilities" AS a
+INNER JOIN "DoctorUsers" AS d ON a."DoctorUserId" = d."Id"
+WHERE a."DoctorUserId" = @__doctorId_0
+2025-05-16 20:00:27.856 -03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[api_econsulta.DTOs.AvailabilityDto, api-econsulta, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-05-16 20:00:27.858 -03:00 [INF] Executed action api_econsulta.Controllers.AvailabilitiesController.GetDoctorAvailabilities (api-econsulta) in 6.3917ms
+2025-05-16 20:00:27.860 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetDoctorAvailabilities (api-econsulta)'
+2025-05-16 20:00:27.862 -03:00 [INF] HTTP GET /api/Availabilities/doctor/ae8a97ab-b0f2-40c4-9c4b-d222b1474f49 responded 200 in 14.2130 ms
+2025-05-16 20:00:27.864 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/api/Availabilities/doctor/ae8a97ab-b0f2-40c4-9c4b-d222b1474f49 - 200 null application/json; charset=utf-8 19.1525ms
+2025-05-16 20:00:35.175 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/api/Availabilities/available - null null
+2025-05-16 20:00:35.180 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta)'
+2025-05-16 20:00:35.183 -03:00 [INF] Route matched with {action = "GetAvailableAvailabilities", controller = "Availabilities"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAvailableAvailabilities() on controller api_econsulta.Controllers.AvailabilitiesController (api-econsulta).
+2025-05-16 20:00:35.207 -03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__now_0='2025-05-16T23:00:35.1865981Z' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."DoctorUserId", a."End", a."IsBooked", a."Start", d."Id", d."DoctorName", d."Email", d."PasswordHash", d."Specialty"
+FROM "Availabilities" AS a
+INNER JOIN "DoctorUsers" AS d ON a."DoctorUserId" = d."Id"
+WHERE a."Start" > @__now_0 AND NOT EXISTS (
+    SELECT 1
+    FROM "Appointments" AS a0
+    WHERE a0."AvailabilityId" = a."Id")
+2025-05-16 20:00:35.210 -03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[api_econsulta.DTOs.AvailabilityDto, api-econsulta, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-05-16 20:00:35.211 -03:00 [INF] Executed action api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta) in 26.1454ms
+2025-05-16 20:00:35.212 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta)'
+2025-05-16 20:00:35.213 -03:00 [INF] HTTP GET /api/Availabilities/available responded 200 in 33.9078 ms
+2025-05-16 20:00:35.215 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/api/Availabilities/available - 200 null application/json; charset=utf-8 39.8348ms
+2025-05-16 20:00:40.298 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/api/Availabilities/available - null null
+2025-05-16 20:00:40.301 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta)'
+2025-05-16 20:00:40.302 -03:00 [INF] Route matched with {action = "GetAvailableAvailabilities", controller = "Availabilities"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAvailableAvailabilities() on controller api_econsulta.Controllers.AvailabilitiesController (api-econsulta).
+2025-05-16 20:00:40.307 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[@__now_0='2025-05-16T23:00:40.3052922Z' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."DoctorUserId", a."End", a."IsBooked", a."Start", d."Id", d."DoctorName", d."Email", d."PasswordHash", d."Specialty"
+FROM "Availabilities" AS a
+INNER JOIN "DoctorUsers" AS d ON a."DoctorUserId" = d."Id"
+WHERE a."Start" > @__now_0 AND NOT EXISTS (
+    SELECT 1
+    FROM "Appointments" AS a0
+    WHERE a0."AvailabilityId" = a."Id")
+2025-05-16 20:00:40.310 -03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[api_econsulta.DTOs.AvailabilityDto, api-econsulta, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-05-16 20:00:40.312 -03:00 [INF] Executed action api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta) in 6.9845ms
+2025-05-16 20:00:40.313 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta)'
+2025-05-16 20:00:40.314 -03:00 [INF] HTTP GET /api/Availabilities/available responded 200 in 13.0469 ms
+2025-05-16 20:00:40.316 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/api/Availabilities/available - 200 null application/json; charset=utf-8 17.4127ms
+2025-05-16 20:00:46.760 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/api/Availabilities/available - null null
+2025-05-16 20:00:46.764 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta)'
+2025-05-16 20:00:46.765 -03:00 [INF] Route matched with {action = "GetAvailableAvailabilities", controller = "Availabilities"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAvailableAvailabilities() on controller api_econsulta.Controllers.AvailabilitiesController (api-econsulta).
+2025-05-16 20:00:46.770 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[@__now_0='2025-05-16T23:00:46.7682978Z' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."DoctorUserId", a."End", a."IsBooked", a."Start", d."Id", d."DoctorName", d."Email", d."PasswordHash", d."Specialty"
+FROM "Availabilities" AS a
+INNER JOIN "DoctorUsers" AS d ON a."DoctorUserId" = d."Id"
+WHERE a."Start" > @__now_0 AND NOT EXISTS (
+    SELECT 1
+    FROM "Appointments" AS a0
+    WHERE a0."AvailabilityId" = a."Id")
+2025-05-16 20:00:46.774 -03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[api_econsulta.DTOs.AvailabilityDto, api-econsulta, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-05-16 20:00:46.776 -03:00 [INF] Executed action api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta) in 8.0124ms
+2025-05-16 20:00:46.777 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta)'
+2025-05-16 20:00:46.779 -03:00 [INF] HTTP GET /api/Availabilities/available responded 200 in 15.2222 ms
+2025-05-16 20:00:46.781 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/api/Availabilities/available - 200 null application/json; charset=utf-8 20.6245ms
+2025-05-16 20:00:54.925 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/api/doctors - null null
+2025-05-16 20:00:54.928 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.DoctorUserController.GetAll (api-econsulta)'
+2025-05-16 20:00:54.931 -03:00 [INF] Route matched with {action = "GetAll", controller = "DoctorUser"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[api_econsulta.Models.DoctorUser]]] GetAll() on controller api_econsulta.Controllers.DoctorUserController (api-econsulta).
+2025-05-16 20:00:54.935 -03:00 [INF] Executed action api_econsulta.Controllers.DoctorUserController.GetAll (api-econsulta) in 1.2326ms
+2025-05-16 20:00:54.936 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.DoctorUserController.GetAll (api-econsulta)'
+2025-05-16 20:00:54.937 -03:00 [ERR] HTTP GET /api/doctors responded 500 in 8.8322 ms
+System.InvalidOperationException: Unable to resolve service for type 'api_econsulta.Services.DoctorUserService' while attempting to activate 'api_econsulta.Controllers.DoctorUserController'.
+   at Microsoft.Extensions.DependencyInjection.ActivatorUtilities.ThrowHelperUnableToResolveService(Type type, Type requiredBy)
+   at lambda_method219(Closure, IServiceProvider, Object[])
+   at Microsoft.AspNetCore.Mvc.Controllers.ControllerFactoryProvider.<>c__DisplayClass6_0.<CreateControllerFactory>g__CreateController|0(ControllerContext controllerContext)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|7_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-05-16 20:00:54.952 -03:00 [ERR] An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Unable to resolve service for type 'api_econsulta.Services.DoctorUserService' while attempting to activate 'api_econsulta.Controllers.DoctorUserController'.
+   at Microsoft.Extensions.DependencyInjection.ActivatorUtilities.ThrowHelperUnableToResolveService(Type type, Type requiredBy)
+   at lambda_method219(Closure, IServiceProvider, Object[])
+   at Microsoft.AspNetCore.Mvc.Controllers.ControllerFactoryProvider.<>c__DisplayClass6_0.<CreateControllerFactory>g__CreateController|0(ControllerContext controllerContext)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|7_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.RateLimiting.RateLimitingMiddleware.InvokeInternal(HttpContext context, EnableRateLimitingAttribute enableRateLimitingAttribute)
+   at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-05-16 20:00:54.959 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/api/doctors - 500 null text/plain; charset=utf-8 33.622ms
+2025-05-16 20:16:19.559 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/api/Availabilities/available - null null
+2025-05-16 20:16:19.561 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta)'
+2025-05-16 20:16:19.563 -03:00 [INF] Route matched with {action = "GetAvailableAvailabilities", controller = "Availabilities"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAvailableAvailabilities() on controller api_econsulta.Controllers.AvailabilitiesController (api-econsulta).
+2025-05-16 20:16:19.576 -03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__now_0='2025-05-16T23:16:19.5654305Z' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."DoctorUserId", a."End", a."IsBooked", a."Start", d."Id", d."DoctorName", d."Email", d."PasswordHash", d."Specialty"
+FROM "Availabilities" AS a
+INNER JOIN "DoctorUsers" AS d ON a."DoctorUserId" = d."Id"
+WHERE a."Start" > @__now_0 AND NOT EXISTS (
+    SELECT 1
+    FROM "Appointments" AS a0
+    WHERE a0."AvailabilityId" = a."Id")
+2025-05-16 20:16:19.578 -03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[api_econsulta.DTOs.AvailabilityDto, api-econsulta, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-05-16 20:16:19.580 -03:00 [INF] Executed action api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta) in 14.9118ms
+2025-05-16 20:16:19.581 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta)'
+2025-05-16 20:16:19.582 -03:00 [INF] HTTP GET /api/Availabilities/available responded 200 in 20.4941 ms
+2025-05-16 20:16:19.584 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/api/Availabilities/available - 200 null application/json; charset=utf-8 24.8023ms
+2025-05-16 20:18:36.645 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/index.html - null null
+2025-05-16 20:18:36.648 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/index.html - 200 null text/html;charset=utf-8 2.7359ms
+2025-05-16 20:18:36.662 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - null null
+2025-05-16 20:18:36.665 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - 200 16481 application/javascript; charset=utf-8 3.4924ms
+2025-05-16 20:18:36.829 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - null null
+2025-05-16 20:18:36.836 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 7.815ms
+2025-05-16 20:18:52.972 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/index.html - null null
+2025-05-16 20:18:52.976 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/index.html - 200 null text/html;charset=utf-8 3.2726ms
+2025-05-16 20:18:52.990 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - null null
+2025-05-16 20:18:52.994 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - 200 16481 application/javascript; charset=utf-8 3.3669ms
+2025-05-16 20:18:53.033 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - null null
+2025-05-16 20:18:53.041 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 7.4067ms
+2025-05-16 20:19:01.709 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/index.html - null null
+2025-05-16 20:19:01.712 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/index.html - 200 null text/html;charset=utf-8 2.8589ms
+2025-05-16 20:19:01.723 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - null null
+2025-05-16 20:19:01.726 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - 200 16481 application/javascript; charset=utf-8 3.4546ms
+2025-05-16 20:19:01.771 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - null null
+2025-05-16 20:19:01.778 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 7.7975ms
+2025-05-16 20:19:09.338 -03:00 [INF] Application is shutting down...
+2025-05-16 20:19:19.187 -03:00 [INF] Iniciando a API eConsulta
+2025-05-16 20:19:19.237 -03:00 [INF] User profile is available. Using 'C:\Users\danie\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-05-16 20:19:19.275 -03:00 [WRN] The WebRootPath was not found: D:\projetos\api-econsulta\wwwroot. Static files may be unavailable.
+2025-05-16 20:19:19.341 -03:00 [INF] Now listening on: https://localhost:7083
+2025-05-16 20:19:19.343 -03:00 [INF] Now listening on: http://localhost:5211
+2025-05-16 20:19:19.345 -03:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-05-16 20:19:19.345 -03:00 [INF] Hosting environment: Development
+2025-05-16 20:19:19.346 -03:00 [INF] Content root path: D:\projetos\api-econsulta
+2025-05-16 20:28:12.335 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/api/Availabilities/available - null null
+2025-05-16 20:28:12.396 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta)'
+2025-05-16 20:28:12.409 -03:00 [INF] Route matched with {action = "GetAvailableAvailabilities", controller = "Availabilities"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAvailableAvailabilities() on controller api_econsulta.Controllers.AvailabilitiesController (api-econsulta).
+2025-05-16 20:28:12.740 -03:00 [WRN] Sensitive data logging is enabled. Log entries and exception messages may include sensitive application data; this mode should only be enabled during development.
+2025-05-16 20:28:13.155 -03:00 [INF] Executed DbCommand (31ms) [Parameters=[@__now_0='2025-05-16T23:28:12.4766743Z' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."DoctorUserId", a."End", a."IsBooked", a."Start", d."Id", d."DoctorName", d."Email", d."PasswordHash", d."Specialty"
+FROM "Availabilities" AS a
+INNER JOIN "DoctorUsers" AS d ON a."DoctorUserId" = d."Id"
+WHERE a."Start" > @__now_0 AND NOT (a."IsBooked")
+2025-05-16 20:28:13.180 -03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[api_econsulta.DTOs.AvailabilityDto, api-econsulta, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-05-16 20:28:13.220 -03:00 [INF] Executed action api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta) in 806.252ms
+2025-05-16 20:28:13.224 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta)'
+2025-05-16 20:28:13.227 -03:00 [INF] HTTP GET /api/Availabilities/available responded 200 in 853.7359 ms
+2025-05-16 20:28:13.235 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/api/Availabilities/available - 200 null application/json; charset=utf-8 901.242ms
+2025-05-16 20:29:03.196 -03:00 [INF] Iniciando a API eConsulta
+2025-05-16 20:29:03.248 -03:00 [INF] User profile is available. Using 'C:\Users\danie\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-05-16 20:29:03.286 -03:00 [WRN] The WebRootPath was not found: D:\projetos\api-econsulta\wwwroot. Static files may be unavailable.
+2025-05-16 20:29:03.353 -03:00 [INF] Now listening on: https://localhost:7083
+2025-05-16 20:29:03.354 -03:00 [INF] Now listening on: http://localhost:5211
+2025-05-16 20:29:03.356 -03:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-05-16 20:29:03.357 -03:00 [INF] Hosting environment: Development
+2025-05-16 20:29:03.358 -03:00 [INF] Content root path: D:\projetos\api-econsulta
+2025-05-16 20:31:04.824 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/api/Availabilities/available - null null
+2025-05-16 20:31:04.872 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta)'
+2025-05-16 20:31:04.890 -03:00 [INF] Route matched with {action = "GetAvailableAvailabilities", controller = "Availabilities"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAvailableAvailabilities() on controller api_econsulta.Controllers.AvailabilitiesController (api-econsulta).
+2025-05-16 20:31:05.239 -03:00 [WRN] Sensitive data logging is enabled. Log entries and exception messages may include sensitive application data; this mode should only be enabled during development.
+2025-05-16 20:31:05.659 -03:00 [INF] Executed DbCommand (31ms) [Parameters=[@__now_0='2025-05-16T23:31:04.9542345Z' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."DoctorUserId", a."End", a."IsBooked", a."Start", d."Id", d."DoctorName", d."Email", d."PasswordHash", d."Specialty"
+FROM "Availabilities" AS a
+INNER JOIN "DoctorUsers" AS d ON a."DoctorUserId" = d."Id"
+WHERE a."Start" > @__now_0 AND NOT (a."IsBooked")
+2025-05-16 20:31:05.685 -03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[api_econsulta.DTOs.AvailabilityDto, api-econsulta, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-05-16 20:31:05.726 -03:00 [INF] Executed action api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta) in 831.4044ms
+2025-05-16 20:31:05.730 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta)'
+2025-05-16 20:31:05.733 -03:00 [INF] HTTP GET /api/Availabilities/available responded 200 in 873.8645 ms
+2025-05-16 20:31:05.741 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/api/Availabilities/available - 200 null application/json; charset=utf-8 918.4541ms
+2025-05-16 20:33:24.237 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/api/Availabilities/available - null null
+2025-05-16 20:33:24.242 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta)'
+2025-05-16 20:33:24.245 -03:00 [INF] Route matched with {action = "GetAvailableAvailabilities", controller = "Availabilities"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAvailableAvailabilities() on controller api_econsulta.Controllers.AvailabilitiesController (api-econsulta).
+2025-05-16 20:33:24.264 -03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__now_0='2025-05-16T23:33:24.2491707Z' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."DoctorUserId", a."End", a."IsBooked", a."Start", d."Id", d."DoctorName", d."Email", d."PasswordHash", d."Specialty"
+FROM "Availabilities" AS a
+INNER JOIN "DoctorUsers" AS d ON a."DoctorUserId" = d."Id"
+WHERE a."Start" > @__now_0 AND NOT (a."IsBooked")
+2025-05-16 20:33:24.267 -03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[api_econsulta.DTOs.AvailabilityDto, api-econsulta, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-05-16 20:33:24.271 -03:00 [INF] Executed action api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta) in 23.5105ms
+2025-05-16 20:33:24.273 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta)'
+2025-05-16 20:33:24.274 -03:00 [INF] HTTP GET /api/Availabilities/available responded 200 in 32.8778 ms
+2025-05-16 20:33:24.276 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/api/Availabilities/available - 200 null application/json; charset=utf-8 39.2976ms
+2025-05-16 20:33:25.386 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/api/Availabilities/available - null null
+2025-05-16 20:33:25.392 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta)'
+2025-05-16 20:33:25.394 -03:00 [INF] Route matched with {action = "GetAvailableAvailabilities", controller = "Availabilities"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAvailableAvailabilities() on controller api_econsulta.Controllers.AvailabilitiesController (api-econsulta).
+2025-05-16 20:33:25.443 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[@__now_0='2025-05-16T23:33:25.3982766Z' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."DoctorUserId", a."End", a."IsBooked", a."Start", d."Id", d."DoctorName", d."Email", d."PasswordHash", d."Specialty"
+FROM "Availabilities" AS a
+INNER JOIN "DoctorUsers" AS d ON a."DoctorUserId" = d."Id"
+WHERE a."Start" > @__now_0 AND NOT (a."IsBooked")
+2025-05-16 20:33:25.446 -03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[api_econsulta.DTOs.AvailabilityDto, api-econsulta, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-05-16 20:33:25.447 -03:00 [INF] Executed action api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta) in 51.5775ms
+2025-05-16 20:33:25.449 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta)'
+2025-05-16 20:33:25.450 -03:00 [INF] HTTP GET /api/Availabilities/available responded 200 in 58.6152 ms
+2025-05-16 20:33:25.452 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/api/Availabilities/available - 200 null application/json; charset=utf-8 65.5782ms
+2025-05-16 20:33:25.536 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/api/Availabilities/available - null null
+2025-05-16 20:33:25.539 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta)'
+2025-05-16 20:33:25.541 -03:00 [INF] Route matched with {action = "GetAvailableAvailabilities", controller = "Availabilities"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAvailableAvailabilities() on controller api_econsulta.Controllers.AvailabilitiesController (api-econsulta).
+2025-05-16 20:33:25.545 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[@__now_0='2025-05-16T23:33:25.5437932Z' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."DoctorUserId", a."End", a."IsBooked", a."Start", d."Id", d."DoctorName", d."Email", d."PasswordHash", d."Specialty"
+FROM "Availabilities" AS a
+INNER JOIN "DoctorUsers" AS d ON a."DoctorUserId" = d."Id"
+WHERE a."Start" > @__now_0 AND NOT (a."IsBooked")
+2025-05-16 20:33:25.548 -03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[api_econsulta.DTOs.AvailabilityDto, api-econsulta, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-05-16 20:33:25.550 -03:00 [INF] Executed action api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta) in 6.5313ms
+2025-05-16 20:33:25.551 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta)'
+2025-05-16 20:33:25.552 -03:00 [INF] HTTP GET /api/Availabilities/available responded 200 in 12.5635 ms
+2025-05-16 20:33:25.554 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/api/Availabilities/available - 200 null application/json; charset=utf-8 18.1086ms
+2025-05-16 20:33:25.689 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/api/Availabilities/available - null null
+2025-05-16 20:33:25.691 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta)'
+2025-05-16 20:33:25.693 -03:00 [INF] Route matched with {action = "GetAvailableAvailabilities", controller = "Availabilities"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAvailableAvailabilities() on controller api_econsulta.Controllers.AvailabilitiesController (api-econsulta).
+2025-05-16 20:33:25.697 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[@__now_0='2025-05-16T23:33:25.6955632Z' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."DoctorUserId", a."End", a."IsBooked", a."Start", d."Id", d."DoctorName", d."Email", d."PasswordHash", d."Specialty"
+FROM "Availabilities" AS a
+INNER JOIN "DoctorUsers" AS d ON a."DoctorUserId" = d."Id"
+WHERE a."Start" > @__now_0 AND NOT (a."IsBooked")
+2025-05-16 20:33:25.699 -03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[api_econsulta.DTOs.AvailabilityDto, api-econsulta, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-05-16 20:33:25.701 -03:00 [INF] Executed action api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta) in 6.1275ms
+2025-05-16 20:33:25.702 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta)'
+2025-05-16 20:33:25.703 -03:00 [INF] HTTP GET /api/Availabilities/available responded 200 in 12.0793 ms
+2025-05-16 20:33:25.705 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/api/Availabilities/available - 200 null application/json; charset=utf-8 16.3106ms
+2025-05-16 20:33:25.840 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/api/Availabilities/available - null null
+2025-05-16 20:33:25.843 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta)'
+2025-05-16 20:33:25.844 -03:00 [INF] Route matched with {action = "GetAvailableAvailabilities", controller = "Availabilities"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAvailableAvailabilities() on controller api_econsulta.Controllers.AvailabilitiesController (api-econsulta).
+2025-05-16 20:33:25.848 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[@__now_0='2025-05-16T23:33:25.8469525Z' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."DoctorUserId", a."End", a."IsBooked", a."Start", d."Id", d."DoctorName", d."Email", d."PasswordHash", d."Specialty"
+FROM "Availabilities" AS a
+INNER JOIN "DoctorUsers" AS d ON a."DoctorUserId" = d."Id"
+WHERE a."Start" > @__now_0 AND NOT (a."IsBooked")
+2025-05-16 20:33:25.851 -03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[api_econsulta.DTOs.AvailabilityDto, api-econsulta, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-05-16 20:33:25.852 -03:00 [INF] Executed action api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta) in 6.1061ms
+2025-05-16 20:33:25.854 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta)'
+2025-05-16 20:33:25.855 -03:00 [INF] HTTP GET /api/Availabilities/available responded 200 in 12.0176 ms
+2025-05-16 20:33:25.857 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/api/Availabilities/available - 200 null application/json; charset=utf-8 16.7191ms
+2025-05-16 20:33:25.992 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/api/Availabilities/available - null null
+2025-05-16 20:33:25.995 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta)'
+2025-05-16 20:33:25.997 -03:00 [INF] Route matched with {action = "GetAvailableAvailabilities", controller = "Availabilities"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAvailableAvailabilities() on controller api_econsulta.Controllers.AvailabilitiesController (api-econsulta).
+2025-05-16 20:33:26.001 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[@__now_0='2025-05-16T23:33:25.9990901Z' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."DoctorUserId", a."End", a."IsBooked", a."Start", d."Id", d."DoctorName", d."Email", d."PasswordHash", d."Specialty"
+FROM "Availabilities" AS a
+INNER JOIN "DoctorUsers" AS d ON a."DoctorUserId" = d."Id"
+WHERE a."Start" > @__now_0 AND NOT (a."IsBooked")
+2025-05-16 20:33:26.003 -03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[api_econsulta.DTOs.AvailabilityDto, api-econsulta, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-05-16 20:33:26.005 -03:00 [INF] Executed action api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta) in 6.2945ms
+2025-05-16 20:33:26.006 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta)'
+2025-05-16 20:33:26.007 -03:00 [INF] HTTP GET /api/Availabilities/available responded 200 in 12.0982 ms
+2025-05-16 20:33:26.009 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/api/Availabilities/available - 200 null application/json; charset=utf-8 17.0553ms
+2025-05-16 20:33:26.144 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/api/Availabilities/available - null null
+2025-05-16 20:33:26.147 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta)'
+2025-05-16 20:33:26.148 -03:00 [INF] Route matched with {action = "GetAvailableAvailabilities", controller = "Availabilities"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAvailableAvailabilities() on controller api_econsulta.Controllers.AvailabilitiesController (api-econsulta).
+2025-05-16 20:33:26.152 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[@__now_0='2025-05-16T23:33:26.1506892Z' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."DoctorUserId", a."End", a."IsBooked", a."Start", d."Id", d."DoctorName", d."Email", d."PasswordHash", d."Specialty"
+FROM "Availabilities" AS a
+INNER JOIN "DoctorUsers" AS d ON a."DoctorUserId" = d."Id"
+WHERE a."Start" > @__now_0 AND NOT (a."IsBooked")
+2025-05-16 20:33:26.155 -03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[api_econsulta.DTOs.AvailabilityDto, api-econsulta, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-05-16 20:33:26.156 -03:00 [INF] Executed action api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta) in 6.3521ms
+2025-05-16 20:33:26.158 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta)'
+2025-05-16 20:33:26.159 -03:00 [INF] HTTP GET /api/Availabilities/available responded 200 in 11.9978 ms
+2025-05-16 20:33:26.161 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/api/Availabilities/available - 200 null application/json; charset=utf-8 17.0439ms
+2025-05-16 20:33:26.296 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/api/Availabilities/available - null null
+2025-05-16 20:33:26.299 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta)'
+2025-05-16 20:33:26.300 -03:00 [INF] Route matched with {action = "GetAvailableAvailabilities", controller = "Availabilities"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAvailableAvailabilities() on controller api_econsulta.Controllers.AvailabilitiesController (api-econsulta).
+2025-05-16 20:33:26.304 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[@__now_0='2025-05-16T23:33:26.3025332Z' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."DoctorUserId", a."End", a."IsBooked", a."Start", d."Id", d."DoctorName", d."Email", d."PasswordHash", d."Specialty"
+FROM "Availabilities" AS a
+INNER JOIN "DoctorUsers" AS d ON a."DoctorUserId" = d."Id"
+WHERE a."Start" > @__now_0 AND NOT (a."IsBooked")
+2025-05-16 20:33:26.307 -03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[api_econsulta.DTOs.AvailabilityDto, api-econsulta, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-05-16 20:33:26.308 -03:00 [INF] Executed action api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta) in 6.5028ms
+2025-05-16 20:33:26.310 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta)'
+2025-05-16 20:33:26.311 -03:00 [INF] HTTP GET /api/Availabilities/available responded 200 in 12.4874 ms
+2025-05-16 20:33:26.314 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/api/Availabilities/available - 200 null application/json; charset=utf-8 17.8253ms
+2025-05-16 20:33:26.438 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/api/Availabilities/available - null null
+2025-05-16 20:33:26.441 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta)'
+2025-05-16 20:33:26.443 -03:00 [INF] Route matched with {action = "GetAvailableAvailabilities", controller = "Availabilities"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAvailableAvailabilities() on controller api_econsulta.Controllers.AvailabilitiesController (api-econsulta).
+2025-05-16 20:33:26.447 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[@__now_0='2025-05-16T23:33:26.4456694Z' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."DoctorUserId", a."End", a."IsBooked", a."Start", d."Id", d."DoctorName", d."Email", d."PasswordHash", d."Specialty"
+FROM "Availabilities" AS a
+INNER JOIN "DoctorUsers" AS d ON a."DoctorUserId" = d."Id"
+WHERE a."Start" > @__now_0 AND NOT (a."IsBooked")
+2025-05-16 20:33:26.450 -03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[api_econsulta.DTOs.AvailabilityDto, api-econsulta, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-05-16 20:33:26.451 -03:00 [INF] Executed action api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta) in 6.2008ms
+2025-05-16 20:33:26.453 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta)'
+2025-05-16 20:33:26.454 -03:00 [INF] HTTP GET /api/Availabilities/available responded 200 in 13.1417 ms
+2025-05-16 20:33:26.456 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/api/Availabilities/available - 200 null application/json; charset=utf-8 18.1945ms
+2025-05-16 20:33:26.579 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/api/Availabilities/available - null null
+2025-05-16 20:33:26.582 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta)'
+2025-05-16 20:33:26.583 -03:00 [INF] Route matched with {action = "GetAvailableAvailabilities", controller = "Availabilities"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAvailableAvailabilities() on controller api_econsulta.Controllers.AvailabilitiesController (api-econsulta).
+2025-05-16 20:33:26.587 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[@__now_0='2025-05-16T23:33:26.5857486Z' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."DoctorUserId", a."End", a."IsBooked", a."Start", d."Id", d."DoctorName", d."Email", d."PasswordHash", d."Specialty"
+FROM "Availabilities" AS a
+INNER JOIN "DoctorUsers" AS d ON a."DoctorUserId" = d."Id"
+WHERE a."Start" > @__now_0 AND NOT (a."IsBooked")
+2025-05-16 20:33:26.589 -03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[api_econsulta.DTOs.AvailabilityDto, api-econsulta, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-05-16 20:33:26.591 -03:00 [INF] Executed action api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta) in 5.8672ms
+2025-05-16 20:33:26.593 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta)'
+2025-05-16 20:33:26.594 -03:00 [INF] HTTP GET /api/Availabilities/available responded 200 in 12.0876 ms
+2025-05-16 20:33:26.596 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/api/Availabilities/available - 200 null application/json; charset=utf-8 16.5846ms
+2025-05-16 20:33:37.219 -03:00 [INF] Iniciando a API eConsulta
+2025-05-16 20:33:37.274 -03:00 [INF] User profile is available. Using 'C:\Users\danie\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-05-16 20:33:37.314 -03:00 [WRN] The WebRootPath was not found: D:\projetos\api-econsulta\wwwroot. Static files may be unavailable.
+2025-05-16 20:33:37.381 -03:00 [INF] Now listening on: https://localhost:7083
+2025-05-16 20:33:37.382 -03:00 [INF] Now listening on: http://localhost:5211
+2025-05-16 20:33:37.384 -03:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-05-16 20:33:37.385 -03:00 [INF] Hosting environment: Development
+2025-05-16 20:33:37.386 -03:00 [INF] Content root path: D:\projetos\api-econsulta
+2025-05-16 20:33:40.034 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/index.html - null null
+2025-05-16 20:33:40.105 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/index.html - 200 null text/html;charset=utf-8 71.7675ms
+2025-05-16 20:33:40.120 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - null null
+2025-05-16 20:33:40.127 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - 200 16481 application/javascript; charset=utf-8 7.3024ms
+2025-05-16 20:33:40.238 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - null null
+2025-05-16 20:33:40.315 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 77.4948ms
+2025-05-16 20:33:45.985 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/api/Availabilities/available - null null
+2025-05-16 20:33:46.021 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta)'
+2025-05-16 20:33:46.031 -03:00 [INF] Route matched with {action = "GetAvailableAvailabilities", controller = "Availabilities"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAvailableAvailabilities() on controller api_econsulta.Controllers.AvailabilitiesController (api-econsulta).
+2025-05-16 20:33:46.362 -03:00 [WRN] Sensitive data logging is enabled. Log entries and exception messages may include sensitive application data; this mode should only be enabled during development.
+2025-05-16 20:33:46.783 -03:00 [INF] Executed DbCommand (31ms) [Parameters=[@__now_0='2025-05-16T23:33:46.0936893Z' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."DoctorUserId", a."End", a."IsBooked", a."Start", d."Id", d."DoctorName", d."Email", d."PasswordHash", d."Specialty"
+FROM "Availabilities" AS a
+INNER JOIN "DoctorUsers" AS d ON a."DoctorUserId" = d."Id"
+WHERE a."Start" > @__now_0 AND NOT (a."IsBooked")
+2025-05-16 20:33:46.808 -03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[api_econsulta.DTOs.AvailabilityDto, api-econsulta, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-05-16 20:33:46.834 -03:00 [INF] Executed action api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta) in 798.8176ms
+2025-05-16 20:33:46.836 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta)'
+2025-05-16 20:33:46.838 -03:00 [INF] HTTP GET /api/Availabilities/available responded 200 in 831.6942 ms
+2025-05-16 20:33:46.845 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/api/Availabilities/available - 200 null application/json; charset=utf-8 860.2794ms
+2025-05-16 20:43:46.803 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/index.html - null null
+2025-05-16 20:43:46.806 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/index.html - 200 null text/html;charset=utf-8 3.0161ms
+2025-05-16 20:43:46.821 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - null null
+2025-05-16 20:43:46.824 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - 200 16481 application/javascript; charset=utf-8 2.8741ms
+2025-05-16 20:43:46.949 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - null null
+2025-05-16 20:43:46.958 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 8.6922ms
+2025-05-16 20:43:59.310 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/api/Availabilities/available - null null
+2025-05-16 20:43:59.314 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta)'
+2025-05-16 20:43:59.318 -03:00 [INF] Route matched with {action = "GetAvailableAvailabilities", controller = "Availabilities"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAvailableAvailabilities() on controller api_econsulta.Controllers.AvailabilitiesController (api-econsulta).
+2025-05-16 20:43:59.355 -03:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."DoctorUserId", a."End", a."IsBooked", a."Start", d."Id", d."DoctorName", d."Email", d."PasswordHash", d."Specialty"
+FROM "Availabilities" AS a
+INNER JOIN "DoctorUsers" AS d ON a."DoctorUserId" = d."Id"
+2025-05-16 20:43:59.403 -03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[api_econsulta.DTOs.AvailabilityDto, api-econsulta, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-05-16 20:43:59.409 -03:00 [INF] Executed action api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta) in 88.588ms
+2025-05-16 20:43:59.410 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta)'
+2025-05-16 20:43:59.411 -03:00 [INF] HTTP GET /api/Availabilities/available responded 200 in 98.0439 ms
+2025-05-16 20:43:59.413 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/api/Availabilities/available - 200 null application/json; charset=utf-8 103.0963ms
+2025-05-16 20:44:15.692 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/api/Availabilities/doctor/ae8a97ab-b0f2-40c4-9c4b-d222b1474f49 - null null
+2025-05-16 20:44:15.699 -03:00 [INF] Authorization failed. These requirements were not met:
+DenyAnonymousAuthorizationRequirement: Requires an authenticated user.
+2025-05-16 20:44:15.702 -03:00 [INF] AuthenticationScheme: Bearer was challenged.
+2025-05-16 20:44:15.703 -03:00 [INF] HTTP GET /api/Availabilities/doctor/ae8a97ab-b0f2-40c4-9c4b-d222b1474f49 responded 401 in 7.0209 ms
+2025-05-16 20:44:15.705 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/api/Availabilities/doctor/ae8a97ab-b0f2-40c4-9c4b-d222b1474f49 - 401 0 null 13.3865ms
+2025-05-16 20:44:24.946 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/api/Availabilities/available - null null
+2025-05-16 20:44:24.950 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta)'
+2025-05-16 20:44:24.951 -03:00 [INF] Route matched with {action = "GetAvailableAvailabilities", controller = "Availabilities"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAvailableAvailabilities() on controller api_econsulta.Controllers.AvailabilitiesController (api-econsulta).
+2025-05-16 20:44:25.004 -03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."DoctorUserId", a."End", a."IsBooked", a."Start", d."Id", d."DoctorName", d."Email", d."PasswordHash", d."Specialty"
+FROM "Availabilities" AS a
+INNER JOIN "DoctorUsers" AS d ON a."DoctorUserId" = d."Id"
+2025-05-16 20:44:25.007 -03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[api_econsulta.DTOs.AvailabilityDto, api-econsulta, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-05-16 20:44:25.008 -03:00 [INF] Executed action api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta) in 54.623ms
+2025-05-16 20:44:25.010 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.AvailabilitiesController.GetAvailableAvailabilities (api-econsulta)'
+2025-05-16 20:44:25.011 -03:00 [INF] HTTP GET /api/Availabilities/available responded 200 in 61.4577 ms
+2025-05-16 20:44:25.013 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/api/Availabilities/available - 200 null application/json; charset=utf-8 66.2756ms
+2025-05-16 20:45:14.757 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/api/doctors - null null
+2025-05-16 20:45:14.760 -03:00 [INF] Executing endpoint 'api_econsulta.Controllers.DoctorUserController.GetAll (api-econsulta)'
+2025-05-16 20:45:14.763 -03:00 [INF] Route matched with {action = "GetAll", controller = "DoctorUser"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[api_econsulta.Models.DoctorUser]]] GetAll() on controller api_econsulta.Controllers.DoctorUserController (api-econsulta).
+2025-05-16 20:45:14.767 -03:00 [INF] Executed action api_econsulta.Controllers.DoctorUserController.GetAll (api-econsulta) in 1.2882ms
+2025-05-16 20:45:14.769 -03:00 [INF] Executed endpoint 'api_econsulta.Controllers.DoctorUserController.GetAll (api-econsulta)'
+2025-05-16 20:45:14.770 -03:00 [ERR] HTTP GET /api/doctors responded 500 in 9.5361 ms
+System.InvalidOperationException: Unable to resolve service for type 'api_econsulta.Services.DoctorUserService' while attempting to activate 'api_econsulta.Controllers.DoctorUserController'.
+   at Microsoft.Extensions.DependencyInjection.ActivatorUtilities.ThrowHelperUnableToResolveService(Type type, Type requiredBy)
+   at lambda_method190(Closure, IServiceProvider, Object[])
+   at Microsoft.AspNetCore.Mvc.Controllers.ControllerFactoryProvider.<>c__DisplayClass6_0.<CreateControllerFactory>g__CreateController|0(ControllerContext controllerContext)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|7_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-05-16 20:45:14.785 -03:00 [ERR] An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Unable to resolve service for type 'api_econsulta.Services.DoctorUserService' while attempting to activate 'api_econsulta.Controllers.DoctorUserController'.
+   at Microsoft.Extensions.DependencyInjection.ActivatorUtilities.ThrowHelperUnableToResolveService(Type type, Type requiredBy)
+   at lambda_method190(Closure, IServiceProvider, Object[])
+   at Microsoft.AspNetCore.Mvc.Controllers.ControllerFactoryProvider.<>c__DisplayClass6_0.<CreateControllerFactory>g__CreateController|0(ControllerContext controllerContext)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|7_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.RateLimiting.RateLimitingMiddleware.InvokeInternal(HttpContext context, EnableRateLimitingAttribute enableRateLimitingAttribute)
+   at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-05-16 20:45:14.794 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/api/doctors - 500 null text/plain; charset=utf-8 36.4097ms
+2025-05-16 20:46:53.092 -03:00 [INF] Iniciando a API eConsulta
+2025-05-16 20:46:53.145 -03:00 [INF] User profile is available. Using 'C:\Users\danie\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-05-16 20:46:53.191 -03:00 [WRN] The WebRootPath was not found: D:\projetos\api-econsulta\wwwroot. Static files may be unavailable.
+2025-05-16 20:46:53.272 -03:00 [INF] Now listening on: https://localhost:7083
+2025-05-16 20:46:53.274 -03:00 [INF] Now listening on: http://localhost:5211
+2025-05-16 20:46:53.277 -03:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-05-16 20:46:53.278 -03:00 [INF] Hosting environment: Development
+2025-05-16 20:46:53.280 -03:00 [INF] Content root path: D:\projetos\api-econsulta
+2025-05-16 20:47:37.531 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/index.html - null null
+2025-05-16 20:47:37.595 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/index.html - 200 null text/html;charset=utf-8 65.1683ms
+2025-05-16 20:47:37.608 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - null null
+2025-05-16 20:47:37.616 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - 200 16481 application/javascript; charset=utf-8 7.5208ms
+2025-05-16 20:47:37.726 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - null null
+2025-05-16 20:47:37.793 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 67.0744ms

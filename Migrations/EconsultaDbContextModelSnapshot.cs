@@ -28,16 +28,25 @@ namespace api_econsulta.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("AvailabilityId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("DoctorId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("PatientId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("Time")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AvailabilityId");
 
                     b.HasIndex("DoctorId");
 
@@ -52,23 +61,53 @@ namespace api_econsulta.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("DoctorId")
+                    b.Property<Guid>("DoctorUserId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("EndTime")
+                    b.Property<DateTime>("End")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("StartTime")
+                    b.Property<bool>("IsBooked")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("Start")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DoctorId");
+                    b.HasIndex("DoctorUserId");
 
                     b.ToTable("Availabilities");
                 });
 
-            modelBuilder.Entity("api_econsulta.Models.User", b =>
+            modelBuilder.Entity("api_econsulta.Models.DoctorUser", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("DoctorName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Specialty")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DoctorUsers");
+                });
+
+            modelBuilder.Entity("api_econsulta.Models.PatientUser", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -78,39 +117,40 @@ namespace api_econsulta.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Role")
+                    b.Property<string>("PatientName")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Email")
-                        .IsUnique();
-
-                    b.ToTable("Users");
+                    b.ToTable("PatientUsers");
                 });
 
             modelBuilder.Entity("api_econsulta.Models.Appointment", b =>
                 {
-                    b.HasOne("api_econsulta.Models.User", "Doctor")
+                    b.HasOne("api_econsulta.Models.Availability", "Availability")
                         .WithMany()
-                        .HasForeignKey("DoctorId")
+                        .HasForeignKey("AvailabilityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("api_econsulta.Models.User", "Patient")
+                    b.HasOne("api_econsulta.Models.DoctorUser", "Doctor")
+                        .WithMany()
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("api_econsulta.Models.PatientUser", "Patient")
                         .WithMany("Appointments")
                         .HasForeignKey("PatientId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Availability");
 
                     b.Navigation("Doctor");
 
@@ -119,16 +159,21 @@ namespace api_econsulta.Migrations
 
             modelBuilder.Entity("api_econsulta.Models.Availability", b =>
                 {
-                    b.HasOne("api_econsulta.Models.User", "Doctor")
-                        .WithMany()
-                        .HasForeignKey("DoctorId")
+                    b.HasOne("api_econsulta.Models.DoctorUser", "DoctorUser")
+                        .WithMany("Availabilities")
+                        .HasForeignKey("DoctorUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Doctor");
+                    b.Navigation("DoctorUser");
                 });
 
-            modelBuilder.Entity("api_econsulta.Models.User", b =>
+            modelBuilder.Entity("api_econsulta.Models.DoctorUser", b =>
+                {
+                    b.Navigation("Availabilities");
+                });
+
+            modelBuilder.Entity("api_econsulta.Models.PatientUser", b =>
                 {
                     b.Navigation("Appointments");
                 });

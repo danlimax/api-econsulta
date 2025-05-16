@@ -1,11 +1,17 @@
 namespace api_econsulta.Models
 {
-    public class Availability
+   public class Availability
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
-    public Guid DoctorId { get; set; }
-    public User Doctor { get; set; } = null!; // Role = medico
-    public DateTime StartTime { get; set; }
-    public DateTime EndTime { get; set; }
+    public Guid Id { get; set; }
+
+    public Guid DoctorUserId { get; set; }
+    public DoctorUser DoctorUser { get; set; } = null!;
+
+    public DateTime Start { get; set; }
+    public DateTime End { get; set; }
+
+    public bool IsBooked { get; set; }
 }
+
+
 }

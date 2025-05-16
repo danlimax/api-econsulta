@@ -1,71 +1,93 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using api_econsulta.Data;
-using api_econsulta.DTOs;
-using api_econsulta.Models;
 using Microsoft.AspNetCore.Authorization;
+using api_econsulta.Services;
+using api_econsulta.DTOs;
+using System.Security.Claims;
 
-namespace api_econsulta.Controllers;
-
-[ApiController]
-[Route("api/availabilities")]
-public class AvailabilitiesController(EconsultaDbContext context) : ControllerBase
+namespace api_econsulta.Controllers
 {
-    private readonly EconsultaDbContext _context = context;
-
-    
-    [HttpPost]
-    public async Task<IActionResult> CreateAvailability(AddAvailabilityDto dto)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class AvailabilitiesController : ControllerBase
     {
-        var doctor = await _context.Users.FindAsync(dto.DoctorId);
-        if (doctor == null || doctor.Role != "medico")
+        private readonly AvailabilityService _availabilityService;
+
+        public AvailabilitiesController(AvailabilityService availabilityService)
         {
-            return BadRequest("Médico não encontrado ou inválido.");
+            _availabilityService = availabilityService;
         }
 
-        var availability = new Availability
+        // POST api/availabilities
+        [HttpPost]
+        [Authorize(Policy = "DoctorOrAdminPolicy")]
+        public async Task<IActionResult> CreateAvailability([FromBody] CreateAvailabilityDto model)
         {
-            DoctorId = dto.DoctorId,
-            StartTime = dto.StartTime,
-            EndTime = dto.EndTime
-        };
+            try
+            {
+                // Recupera o ID do médico a partir do token JWT
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var role = User.FindFirstValue(ClaimTypes.Role);
 
-        _context.Availabilities.Add(availability);
-        await _context.SaveChangesAsync();
+                if (role != "medico")
+                    return Forbid("Apenas médicos podem criar disponibilidades.");
 
-        return Ok(new { message = "Disponibilidade cadastrada com sucesso." });
-    }
+                if (!Guid.TryParse(userId, out var doctorId))
+                    return Unauthorized("ID do médico inválido no token.");
 
-    
-    [Authorize(Policy = "DoctorPolicy")]
-    [HttpGet("doctor/{doctorId}")]
-    public async Task<IActionResult> GetByDoctor(Guid doctorId)
-    {
-        var availabilities = await _context.Availabilities
-            .Where(a => a.DoctorId == doctorId)
-            .OrderBy(a => a.StartTime)
-            .ToListAsync();
+                model.DoctorId = doctorId;
 
-        return Ok(availabilities);
-    }
+                var availability = await _availabilityService.CreateAvailabilityAsync(model);
+                
+                return Ok(new
+                {
+                    Message = "Disponibilidade cadastrada com sucesso.",
+                    Availability = availability
+                });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { Message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { Message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Message = "Erro interno ao processar a solicitação" });
+            }
+        }
 
-   
-    [HttpGet("available")]
-    public async Task<IActionResult> GetAvailableSlots()
-    {
-        var now = DateTime.UtcNow;
+        // GET api/availabilities/doctor/{doctorId}
+        [HttpGet("doctor/{doctorId}")]
+        [Authorize] // Opcionalmente: [Authorize(Policy = "DoctorOrAdminPolicy")]
+        public async Task<IActionResult> GetDoctorAvailabilities(Guid doctorId)
+        {
+            try
+            {
+                var availabilities = await _availabilityService.GetDoctorAvailabilitiesAsync(doctorId);
+                return Ok(availabilities);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Message = "Erro interno ao processar a solicitação" });
+            }
+        }
 
-        
-        var bookedSlots = await _context.Availabilities
-            .Select(a => a.StartTime)
-            .ToListAsync();
-
-        var available = await _context.Availabilities
-            .Where(a => a.StartTime > now && !bookedSlots.Contains(a.StartTime))
-            .Include(a => a.Doctor)
-            .OrderBy(a => a.StartTime)
-            .ToListAsync();
-
-        return Ok(available);
+        // GET api/availabilities/available
+        [HttpGet("available")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetAvailableAvailabilities()
+        {
+            try
+            {
+                var availabilities = await _availabilityService.GetAvailableAvailabilitiesAsync();
+                return Ok(availabilities);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Message = "Erro interno ao processar a solicitação" });
+            }
+        }
     }
 }

@@ -1,35 +1,55 @@
-using Microsoft.AspNetCore.Mvc;
 using api_econsulta.DTOs;
 using api_econsulta.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace api_econsulta.Controllers
 {
-[ApiController]
-[Route("api/auth")]
-public class AuthController(AuthService authService) : ControllerBase
-{
-    private readonly AuthService _authService = authService;
-
-    [HttpPost("register")]
-    public async Task<IActionResult> Register(UserRegisterDto dto)
+    [ApiController]
+    [Route("api/auth")]
+    public class AuthController(AuthService authService) : ControllerBase
     {
-        if (await _authService.EmailExists(dto.Email))
-            return BadRequest("Email já cadastrado.");
+        private readonly AuthService _authService = authService;
 
-        await _authService.Register(dto);
-        return Ok(new { message = "Usuário registrado com sucesso." });
+        [HttpPost("register/doctor")]
+        public async Task<IActionResult> RegisterDoctor(DoctorRegisterDto dto)
+        {
+            try
+            {
+                var doctor = await _authService.RegisterDoctorAsync(dto);
+                return Ok(new { doctor.Id, doctor.Email, doctor.DoctorName, doctor.Specialty });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
+
+        [HttpPost("register/patient")]
+        public async Task<IActionResult> RegisterPatient(PatientRegisterDto dto)
+        {
+            try
+            {
+                var patient = await _authService.RegisterPatientAsync(dto);
+                return Ok(new { patient.Id, patient.Email, patient.PatientName });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(LoginDto dto)
+        {
+            try
+            {
+                var (role, token) = await _authService.ValidateDoctorOrPatient(dto.Email, dto.Password);
+                return Ok(new { token, role });
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new { error = ex.Message });
+            }
+        }
     }
-
-    [HttpPost("login")]
-    public async Task<IActionResult> Login(UserLoginDto dto)
-    {
-        var user = await _authService.ValidateUser(dto.Email, dto.Password);
-        if (user == null)
-            return Unauthorized("Credenciais inválidas.");
-
-        var token = _authService.GenerateToken(user);
-        return Ok(new { token });
-    }
-}
-
 }
