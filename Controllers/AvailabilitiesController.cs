@@ -13,7 +13,7 @@ public class AvailabilitiesController(EconsultaDbContext context) : ControllerBa
 {
     private readonly EconsultaDbContext _context = context;
 
-    // POST: /api/availabilities
+    
     [HttpPost]
     public async Task<IActionResult> CreateAvailability(AddAvailabilityDto dto)
     {
