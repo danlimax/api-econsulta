@@ -1306,3 +1306,9 @@ System.InvalidOperationException: Unable to resolve service for type 'api_econsu
 2025-05-16 20:47:37.616 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - 200 16481 application/javascript; charset=utf-8 7.5208ms
 2025-05-16 20:47:37.726 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - null null
 2025-05-16 20:47:37.793 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 67.0744ms
+2025-05-16 20:48:58.723 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/index.html - null null
+2025-05-16 20:48:58.726 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/index.html - 200 null text/html;charset=utf-8 3.0682ms
+2025-05-16 20:48:58.739 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - null null
+2025-05-16 20:48:58.742 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/_framework/aspnetcore-browser-refresh.js - 200 16481 application/javascript; charset=utf-8 3.5706ms
+2025-05-16 20:48:58.779 -03:00 [INF] Request starting HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - null null
+2025-05-16 20:48:58.786 -03:00 [INF] Request finished HTTP/2 GET https://localhost:7083/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 6.454ms

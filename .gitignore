@@ -1,0 +1,19 @@
+# Arquivos de log
+*.log
+logs/
+Logs/
+
+# Diretórios temporários
+bin/
+obj/
+tmp/
+temp/
+
+# Configurações locais de IDEs
+.vscode/
+*.user
+*.suo
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
