@@ -1,36 +1,52 @@
-using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using api_econsulta.DTOs;
+using api_econsulta.Models;
 using api_econsulta.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
-namespace api_econsulta.Controllers;
-
-[ApiController]
-[Route("api/appointments")]
-public class AppointmentController(AppointmentService appointmentService) : ControllerBase
+namespace api_econsulta.Controllers
 {
-    private readonly AppointmentService _appointmentService = appointmentService;
+    [ApiController]
+    [Route("api/appointment")]
+    public class AppointmentController(AppointmentService appointmentService) : ControllerBase
+    {
+        private readonly AppointmentService _appointmentService = appointmentService;
 
-    [HttpPost]
-    public async Task<IActionResult> Create(CreateAppointmentDto dto)
-    {
-        var appointment = await _appointmentService.Create(dto);
-        if (appointment == null) return BadRequest("Horário já agendado ou dados inválidos.");
-        return Ok(appointment);
-    }
-    
-    [Authorize(Policy = "DoctorPolicy")]
-    [HttpGet("doctor/{doctorId}")]
-    public async Task<IActionResult> GetByDoctor(Guid doctorId)
-    {
-        var list = await _appointmentService.GetByDoctor(doctorId);
-        return Ok(list);
-    }
-    [Authorize(Policy = "PatientPolicy")]
-    [HttpGet("patient/{patientId}")]
-    public async Task<IActionResult> GetByPatient(Guid patientId)
-    {
-        var list = await _appointmentService.GetByPatient(patientId);
-        return Ok(list);
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Schedule>> GetById(int id)
+        {
+            var appointment = await _appointmentService.GetByIdAsync(id);
+            if (appointment == null) return NotFound();
+            return Ok(appointment);
+        }
+
+        [Authorize(Roles = "paciente")]
+        [HttpPost("/appointment")]
+        public async Task<ActionResult<Schedule>> CreateAppointment(AppointmentCreateDto dto)
+        {
+            var claims = this.User.Claims;
+            var userIdClaim = claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+            {
+                return BadRequest(new { message = "User ID not found in claims." });
+            }
+
+            var userId = int.Parse(userIdClaim.Value);
+            if (userId <= 0)
+            {
+                return BadRequest(new { message = "Invalid user ID." });
+            }
+            
+            try
+            {
+                var scheduleMax = await _appointmentService.CreateAppointment(dto.AppointmentId, userId);
+                return Created($"/api/appointment/{scheduleMax.Id}", scheduleMax);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
 }

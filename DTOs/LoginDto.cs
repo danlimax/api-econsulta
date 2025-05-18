@@ -1,4 +1,3 @@
-// DTOs/LoginDto.cs
 namespace api_econsulta.DTOs
 {
     public class LoginDto

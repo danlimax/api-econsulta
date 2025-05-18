@@ -2,10 +2,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace api_econsulta.DTOs
 {
-    public class PatientRegisterDto
+    public class UserRegisterDto
     {
         [Required]
-        public string PatientName { get; set; } = null!; // Nome do paciente
+        public string Name { get; set; } = null!; 
 
         [Required, EmailAddress]
         public string Email { get; set; } = null!;

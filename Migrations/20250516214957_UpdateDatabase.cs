@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -11,124 +11,77 @@ namespace api_econsulta.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            // Create users table
             migrationBuilder.CreateTable(
-                name: "DoctorUsers",
+                name: "users",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    DoctorName = table.Column<string>(type: "text", nullable: false),
-                    Email = table.Column<string>(type: "text", nullable: false),
-                    PasswordHash = table.Column<string>(type: "text", nullable: false),
-                    Specialty = table.Column<string>(type: "text", nullable: false)
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    email = table.Column<string>(type: "varchar", nullable: false),
+                    role = table.Column<string>(type: "varchar", nullable: false),
+                    name = table.Column<string>(type: "varchar", nullable: false),
+                    password_hash = table.Column<string>(type: "varchar", nullable: false),
+                    created_at = table.Column<DateTime>(type: "timestamptz", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    updated_at = table.Column<DateTime>(type: "timestamptz", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DoctorUsers", x => x.Id);
+                    table.PrimaryKey("PK_users", x => x.id);
+                    table.UniqueConstraint("AK_users_email", x => x.email);
                 });
 
+            // Create schedule table
             migrationBuilder.CreateTable(
-                name: "PatientUsers",
+                name: "schedule",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    DoctorName = table.Column<string>(type: "text", nullable: false),
-                    Email = table.Column<string>(type: "text", nullable: false),
-                    PasswordHash = table.Column<string>(type: "text", nullable: false)
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    doctor_id = table.Column<int>(type: "integer", nullable: false),
+                    patient_id = table.Column<int?>(type: "integer", nullable: true),
+                    start_time = table.Column<DateTime>(type: "timestamptz", nullable: false),
+                    end_time = table.Column<DateTime>(type: "timestamptz", nullable: false),
+                    created_at = table.Column<DateTime>(type: "timestamptz", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    updated_at = table.Column<DateTime>(type: "timestamptz", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PatientUsers", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Availabilities",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    DoctorId = table.Column<Guid>(type: "uuid", nullable: false),
-                    StartTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    EndTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Availabilities", x => x.Id);
+                    table.PrimaryKey("PK_schedule", x => x.id);
                     table.ForeignKey(
-                        name: "FK_Availabilities_DoctorUsers_DoctorId",
-                        column: x => x.DoctorId,
-                        principalTable: "DoctorUsers",
-                        principalColumn: "Id",
+                        name: "FK_schedule_users_doctor_id",
+                        column: x => x.doctor_id,
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_schedule_users_patient_id",
+                        column: x => x.patient_id,
+                        principalTable: "users",
+                        principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "Appointments",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    PatientId = table.Column<Guid>(type: "uuid", nullable: false),
-                    DoctorId = table.Column<Guid>(type: "uuid", nullable: false),
-                    AvailabilityId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Time = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Status = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Appointments", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Appointments_Availabilities_AvailabilityId",
-                        column: x => x.AvailabilityId,
-                        principalTable: "Availabilities",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Appointments_DoctorUsers_DoctorId",
-                        column: x => x.DoctorId,
-                        principalTable: "DoctorUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Appointments_PatientUsers_PatientId",
-                        column: x => x.PatientId,
-                        principalTable: "PatientUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
+            // Create indexes
+            migrationBuilder.CreateIndex(
+                name: "IX_schedule_doctor_id",
+                table: "schedule",
+                column: "doctor_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Appointments_AvailabilityId",
-                table: "Appointments",
-                column: "AvailabilityId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Appointments_DoctorId",
-                table: "Appointments",
-                column: "DoctorId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Appointments_PatientId",
-                table: "Appointments",
-                column: "PatientId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Availabilities_DoctorId",
-                table: "Availabilities",
-                column: "DoctorId");
+                name: "IX_schedule_patient_id",
+                table: "schedule",
+                column: "patient_id");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Appointments");
+                name: "schedule");
 
             migrationBuilder.DropTable(
-                name: "Availabilities");
-
-            migrationBuilder.DropTable(
-                name: "PatientUsers");
-
-            migrationBuilder.DropTable(
-                name: "DoctorUsers");
+                name: "users");
         }
     }
 }

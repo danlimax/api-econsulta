@@ -1,6 +1,4 @@
 using api_econsulta.Data;
-using api_econsulta.DTOs;
-using api_econsulta.Models;
 using api_econsulta.Configurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -11,71 +9,33 @@ using System.Text;
 
 namespace api_econsulta.Services
 {
-    public class AuthService(
-        EconsultaDbContext context,
-        IOptions<JwtSettings> jwtOptions,
-        ILogger<AuthService> logger)
+    public class AuthService
     {
-        private readonly EconsultaDbContext _context = context;
-        private readonly JwtSettings _jwtSettings = jwtOptions.Value;
-        private readonly ILogger<AuthService> _logger = logger;
+        private readonly EconsultaDbContext _context;
+        private readonly JwtSettings _jwtSettings;
 
-        public async Task<DoctorUser> RegisterDoctorAsync(DoctorRegisterDto dto)
+        public AuthService(
+            EconsultaDbContext context,
+            IOptions<JwtSettings> jwtOptions,
+            ILogger<AuthService> logger)
         {
-            if (await _context.DoctorUsers.AnyAsync(d => d.Email.ToLower() == dto.Email.ToLower()))
-                throw new Exception("Email já cadastrado para médico.");
-
-            var doctor = new DoctorUser
-            {
-                Id = Guid.NewGuid(),
-                DoctorName = dto.DoctorName,
-                Email = dto.Email.ToLower().Trim(),
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password, workFactor: 12),
-                Specialty = dto.Specialty
-            };
-
-            _context.DoctorUsers.Add(doctor);
-            await _context.SaveChangesAsync();
-
-            return doctor;
+            _context = context;
+            _jwtSettings = jwtOptions.Value;
         }
 
-        public async Task<PatientUser> RegisterPatientAsync(PatientRegisterDto dto)
+        public async Task<(string Role, string Token)> ValidateLoginAsync(string email, string password)
         {
-            if (await _context.PatientUsers.AnyAsync(p => p.Email.ToLower() == dto.Email.ToLower()))
-                throw new Exception("Email já cadastrado para paciente.");
+            var lowerEmail = email.ToLower();
 
-            var patient = new PatientUser
-            {
-                Id = Guid.NewGuid(),
-                PatientName = dto.PatientName, // Certifique-se de que o DTO tem esse campo
-                Email = dto.Email.ToLower().Trim(),
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password, workFactor: 12)
-            };
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == lowerEmail);
+            if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
+                throw new UnauthorizedAccessException("Credenciais inválidas.");
 
-            _context.PatientUsers.Add(patient);
-            await _context.SaveChangesAsync();
-
-            return patient;
+            string role = user.Role == "medico" ? "medico" : "paciente";
+            return (role, GenerateToken(user.Id, user.Email, role));
         }
 
-       public async Task<(string Role, string Token)> ValidateDoctorOrPatient(string email, string password)
-{
-    var lowerEmail = email.ToLower();
-
-    var doctor = await _context.DoctorUsers.FirstOrDefaultAsync(d => d.Email == lowerEmail);
-    if (doctor != null && BCrypt.Net.BCrypt.Verify(password, doctor.PasswordHash))
-        return ("medico", GenerateToken(doctor.Id, doctor.Email, "medico"));
-
-    var patient = await _context.PatientUsers.FirstOrDefaultAsync(p => p.Email == lowerEmail);
-    if (patient != null && BCrypt.Net.BCrypt.Verify(password, patient.PasswordHash))
-        return ("paciente", GenerateToken(patient.Id, patient.Email, "paciente"));
-
-    throw new UnauthorizedAccessException("Credenciais inválidas.");
-}
-
-
-        public string GenerateToken(Guid id, string email, string role)
+        public string GenerateToken(int userId, string email, string role)
         {
             if (string.IsNullOrEmpty(_jwtSettings.Key) || _jwtSettings.Key.Length < 16)
                 throw new InvalidOperationException("JWT secret key inválida.");
@@ -85,10 +45,10 @@ namespace api_econsulta.Services
 
             var claims = new List<Claim>
             {
-                new(JwtRegisteredClaimNames.Sub, id.ToString()),
+                new(JwtRegisteredClaimNames.Sub, userId.ToString()),
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new(ClaimTypes.Email, email),
-                new(ClaimTypes.NameIdentifier, id.ToString()),
+                new(ClaimTypes.NameIdentifier, userId.ToString()),
                 new(ClaimTypes.Role, role)
             };
 

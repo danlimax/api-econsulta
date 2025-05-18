@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using api_econsulta.Data;
+using api_econsulta.Models;
+using Namotion.Reflection;
 
 #nullable disable
 
@@ -25,157 +27,102 @@ namespace api_econsulta.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("api_econsulta.Models.Appointment", b =>
+            modelBuilder.HasPostgresEnum("role", new[] { "medico", "paciente" });
+
+            modelBuilder.Entity("api_econsulta.Models.User", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
 
-                    b.Property<Guid>("AvailabilityId")
-                        .HasColumnType("uuid");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
 
-                    b.Property<Guid>("DoctorId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("PatientId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Status")
+                    b.Property<string>("email")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("varchar");
 
-                    b.Property<DateTime>("Time")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("varchar");
 
-                    b.HasKey("Id");
+                    b.Property<string>("role")
+                        .IsRequired()
+                        .HasColumnType("role");
 
-                    b.HasIndex("AvailabilityId");
+                    b.Property<string>("password_hash")
+                        .IsRequired()
+                        .HasColumnType("varchar");
 
-                    b.HasIndex("DoctorId");
+                    b.Property<DateTime>("created_at")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestampz")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-                    b.HasIndex("PatientId");
+                    b.Property<DateTime>("updated_at")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestampz")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-                    b.ToTable("Appointments");
+                    b.HasKey("id");
+
+                    b.ToTable("users");
                 });
 
-            modelBuilder.Entity("api_econsulta.Models.Availability", b =>
+            modelBuilder.Entity("api_econsulta.Models.Schedule", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
 
-                    b.Property<Guid>("DoctorId")
-                        .HasColumnType("uuid");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
 
-                    b.Property<DateTime>("EndTime")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<int>("doctor_id")
+                        .HasColumnType("integer");
 
-                    b.Property<DateTime>("StartTime")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<int?>("patient_id")
+                        .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                    b.Property<DateTime>("start_time")
+                        .HasColumnType("timestamptz");
 
-                    b.HasIndex("DoctorId");
+                    b.Property<DateTime>("end_time")
+                        .HasColumnType("timestamptz");
 
-                    b.ToTable("Availabilities");
+                    b.Property<DateTime>("created_at")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamptz")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<DateTime>("updated_at")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamptz")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("doctor_id");
+
+                    b.HasIndex("patient_id");
+
+                    b.ToTable("schedule");
                 });
 
-            modelBuilder.Entity("api_econsulta.Models.DoctorUser", b =>
+            modelBuilder.Entity("api_econsulta.Models.Schedule", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("DoctorName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Specialty")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("DoctorUsers");
-                });
-
-            modelBuilder.Entity("api_econsulta.Models.PatientUser", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("DoctorName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("PatientUsers");
-                });
-
-            modelBuilder.Entity("api_econsulta.Models.Appointment", b =>
-                {
-                    b.HasOne("api_econsulta.Models.Availability", "Availability")
+                    b.HasOne("api_econsulta.Models.User", "Doctor")
                         .WithMany()
-                        .HasForeignKey("AvailabilityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("api_econsulta.Models.DoctorUser", "Doctor")
-                        .WithMany()
-                        .HasForeignKey("DoctorId")
+                        .HasForeignKey("doctor_id")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("api_econsulta.Models.PatientUser", "Patient")
-                        .WithMany("Appointments")
-                        .HasForeignKey("PatientId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Availability");
+                    b.HasOne("api_econsulta.Models.User", "Patient")
+                        .WithMany()
+                        .HasForeignKey("patient_id")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Doctor");
 
                     b.Navigation("Patient");
-                });
-
-            modelBuilder.Entity("api_econsulta.Models.Availability", b =>
-                {
-                    b.HasOne("api_econsulta.Models.DoctorUser", "Doctor")
-                        .WithMany("Availabilities")
-                        .HasForeignKey("DoctorId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Doctor");
-                });
-
-            modelBuilder.Entity("api_econsulta.Models.DoctorUser", b =>
-                {
-                    b.Navigation("Availabilities");
-                });
-
-            modelBuilder.Entity("api_econsulta.Models.PatientUser", b =>
-                {
-                    b.Navigation("Appointments");
                 });
 #pragma warning restore 612, 618
         }

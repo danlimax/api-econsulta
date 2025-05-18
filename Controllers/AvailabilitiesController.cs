@@ -60,7 +60,7 @@ namespace api_econsulta.Controllers
 
         // GET api/availabilities/doctor/{doctorId}
         [HttpGet("doctor/{doctorId}")]
-        [Authorize] // Opcionalmente: [Authorize(Policy = "DoctorOrAdminPolicy")]
+        [Authorize(Policy = "DoctorOrAdminPolicy")] // Opcionalmente: [Authorize(Policy = "DoctorOrAdminPolicy")]
         public async Task<IActionResult> GetDoctorAvailabilities(Guid doctorId)
         {
             try

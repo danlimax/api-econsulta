@@ -1,37 +1,110 @@
 using api_econsulta.Models;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace api_econsulta.Data
 {
-    public class EconsultaDbContext(DbContextOptions<EconsultaDbContext> options) : DbContext(options)
+    public class EconsultaDbContext : DbContext
     {
-        public DbSet<DoctorUser> DoctorUsers { get; set; }
-        public DbSet<PatientUser> PatientUsers { get; set; }
-        public DbSet<Availability> Availabilities { get; set; }
-        public DbSet<Appointment> Appointments { get; set; }
+        public EconsultaDbContext(DbContextOptions<EconsultaDbContext> options) : base(options)
+        {
+        }
+
+        public DbSet<User> Users { get; set; }
+        public DbSet<Schedule> Schedule { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Disponibilidade vinculada ao médico
-            modelBuilder.Entity<Availability>()
-    .HasOne(a => a.DoctorUser)
-    .WithMany(d => d.Availabilities) // Se existir essa coleção em DoctorUser
-    .HasForeignKey(a => a.DoctorUserId);
+            base.OnModelCreating(modelBuilder);
 
+            // Configure User entity
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.ToTable("users");
+                
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .UseIdentityColumn();
+                
+                entity.Property(e => e.Email)
+                    .HasColumnName("email")
+                    .HasColumnType("varchar")
+                    .IsRequired();
+                
+                entity.Property(e => e.Name)
+                    .HasColumnName("name")
+                    .HasColumnType("varchar")
+                    .IsRequired();
+                
+                entity.Property(e => e.Role)
+                    .HasColumnName("role")
+                    .HasColumnType("varchar")
+                    .IsRequired();
+                
+                entity.Property(e => e.PasswordHash)
+                    .HasColumnName("password_hash")
+                    .HasColumnType("varchar")
+                    .IsRequired();
+                
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnName("created_at")
+                    .HasColumnType("timestamptz")
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                
+                entity.Property(e => e.UpdatedAt)
+                    .HasColumnName("updated_at")
+                    .HasColumnType("timestamptz")
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
+            });
 
-            // Agendamento com médico
-            modelBuilder.Entity<Appointment>()
-                .HasOne(a => a.Doctor)
-                .WithMany()
-                .HasForeignKey(a => a.DoctorId)
-                .OnDelete(DeleteBehavior.Restrict);
+            // Configure Schedule entity
+            modelBuilder.Entity<Schedule>(entity =>
+            {
+                entity.ToTable("schedule");
+                
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .UseIdentityColumn();
+                
+                entity.Property(e => e.DoctorId)
+                    .HasColumnName("doctor_id")
+                    .IsRequired();
 
-            // Agendamento com paciente
-            modelBuilder.Entity<Appointment>()
-                .HasOne(a => a.Patient)
-                .WithMany(p => p.Appointments)
-                .HasForeignKey(a => a.PatientId)
-                .OnDelete(DeleteBehavior.Restrict);
+                entity.Property(e => e.PatientId)
+                    .HasColumnName("patient_id");
+                
+                entity.Property(e => e.StartTime)
+                    .HasColumnName("start_time")
+                    .HasColumnType("timestamptz")
+                    .IsRequired();
+                
+                entity.Property(e => e.EndTime)
+                    .HasColumnName("end_time")
+                    .HasColumnType("timestamptz")
+                    .IsRequired();
+                
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnName("created_at")
+                    .HasColumnType("timestamptz")
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                
+                entity.Property(e => e.UpdatedAt)
+                    .HasColumnName("updated_at")
+                    .HasColumnType("timestamptz")
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                // Doctor schedule relationship
+                entity.HasOne(s => s.Doctor)
+                    .WithMany(u => u.DoctorSchedules)
+                    .HasForeignKey(s => s.DoctorId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                // Patient schedule relationship
+                entity.HasOne(s => s.Patient)
+                    .WithMany(u => u.PatientSchedules)
+                    .HasForeignKey(s => s.PatientId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
         }
     }
 }

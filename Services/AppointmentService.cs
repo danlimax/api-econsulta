@@ -1,5 +1,4 @@
 using api_econsulta.Data;
-using api_econsulta.DTOs;
 using api_econsulta.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,52 +8,68 @@ namespace api_econsulta.Services
     {
         private readonly EconsultaDbContext _context = context;
 
-        // Verifica se já existe agendamento para a disponibilidade
-        public async Task<bool> IsSlotTaken(Guid doctorId, DateTime time)
+        public async Task<Schedule> CreateAppointment(int appointmentId, int patientId)
         {
-            return await _context.Appointments
-                .AnyAsync(a => a.DoctorId == doctorId && a.Time == time);
-        }
+            var strategy = _context.Database.CreateExecutionStrategy();
 
-        public async Task<Appointment?> Create(CreateAppointmentDto dto)
-        {
-            // Impede que dois pacientes agendem o mesmo horário com o mesmo médico
-            if (await IsSlotTaken(dto.DoctorId, dto.Time))
-                return null;
-
-            var doctor = await _context.DoctorUsers.FindAsync(dto.DoctorId);
-            var patient = await _context.PatientUsers.FindAsync(dto.PatientId);
-
-            if (doctor == null || patient == null)
-                return null;
-
-            var appointment = new Appointment
+            return await strategy.ExecuteAsync(async () =>
             {
-                DoctorId = doctor.Id,
-                PatientId = patient.Id,
-                Time = dto.Time
-            };
+                await using var transaction = await _context.Database.BeginTransactionAsync();
 
-            _context.Appointments.Add(appointment);
-            await _context.SaveChangesAsync();
+                try
+                {
+                    var schedule = await GetByIdLockForUpdateAsync(appointmentId);
 
-            return appointment;
+                    if (schedule.PatientId != null)
+                        throw new Exception("Appointment already has a patient.");
+
+                    if (schedule.StartTime < DateTime.UtcNow)
+                        throw new Exception("Cannot create appointment in the past.");
+
+                    if (schedule.EndTime <= schedule.StartTime)
+                        throw new Exception("End time must be after start time.");
+
+                    schedule.PatientId = patientId;
+                    await _context.SaveChangesAsync();
+
+                    await transaction.CommitAsync();
+
+                    return schedule;
+                }
+                catch (DbUpdateConcurrencyException ex)
+                {
+                    throw new Exception("Error updating appointment. Please try again.", ex);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Error creating appointment. Please try again.", ex);
+                }
+            });
         }
 
-        public async Task<List<Appointment>> GetByDoctor(Guid doctorId)
+        public async Task<Schedule?> GetByIdAsync(int id)
         {
-            return await _context.Appointments
-                .Where(a => a.DoctorId == doctorId)
-                .Include(a => a.Patient)
-                .ToListAsync();
+            return await _context.Schedule.FindAsync(id);
         }
 
-        public async Task<List<Appointment>> GetByPatient(Guid patientId)
+        public async Task<Schedule> GetByIdLockForUpdateAsync(int id)
         {
-            return await _context.Appointments
-                .Where(a => a.PatientId == patientId)
-                .Include(a => a.Doctor)
-                .ToListAsync();
+            // Include doctor and patient
+            var schedule = await _context.Schedule
+                .FromSqlRaw(@"
+            SELECT *
+            FROM ""schedule""
+            WHERE ""id"" = {0}
+            FOR UPDATE
+        ", id).Include(s => s.Doctor).
+        FirstOrDefaultAsync();
+
+            if (schedule == null)
+            {
+                throw new Exception("Schedule not found.");
+            }
+
+            return schedule;
         }
     }
 }
