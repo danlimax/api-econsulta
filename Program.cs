@@ -213,8 +213,9 @@ builder.Services.AddHealthChecks()
     .AddDbContextCheck<EconsultaDbContext>();
 
 // Registrar serviços na DI
+builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<AuthService>();
-builder.Services.AddScoped<AvailabilityService>();
+builder.Services.AddScoped<ScheduleService>();
 builder.Services.AddScoped<AppointmentService>();
 
 // Rate limiting
