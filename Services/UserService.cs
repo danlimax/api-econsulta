@@ -1,4 +1,5 @@
 using api_econsulta.Data;
+using api_econsulta.DTOs;
 using api_econsulta.Exceptions;
 using api_econsulta.Models;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,17 @@ namespace api_econsulta.Services
         public async Task<User?> GetByIdAsync(int id)
         {
             return await _context.Users.FindAsync(id);
+        }
+        public async Task<List<DoctorDto>> GetAllDoctorsAsync()
+        {
+            return await _context.Users
+                         .Where(u => u.Role == "medico") // ou sua lógica para identificar médicos
+                         .Select(u => new DoctorDto
+                         {
+                             Id = u.Id,
+                             Name = u.Name
+                         })
+                         .ToListAsync();
         }
 
         public async Task<User?> GetByEmailAsync(string email)

@@ -33,7 +33,17 @@ namespace api_econsulta.Controllers
             if (user == null) return NotFound();
             return Ok(user);
         }
+        
+        [Authorize]
+        [HttpGet("doctors")]
+        public async Task<ActionResult<List<DoctorDto>>> GetDoctors()
+        {
+            var doctors = await _userService.GetAllDoctorsAsync();
+            return Ok(doctors);
+        }
 
+
+        
         [HttpPost("patient")]
         public async Task<ActionResult<User>> CreatePatient(UserRegisterDto dto)
         {

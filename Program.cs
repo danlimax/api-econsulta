@@ -8,8 +8,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Security.Claims;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.HttpOverrides;
-// using Serilog;
-// using Serilog.Events;
+using Serilog;
+using Serilog.Events;
 using api_econsulta.Middlewares;
 using Microsoft.OpenApi.Models;
 
@@ -68,15 +68,15 @@ builder.Services.AddSwaggerGen(options =>
 
 
 // Configuração do Serilog para logging estruturado
-// Log.Logger = new LoggerConfiguration()
-//     .MinimumLevel.Debug()
-//     .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-//     .Enrich.FromLogContext()
-//     .WriteTo.Console()
-//     .WriteTo.File("logs/api-.log", rollingInterval: RollingInterval.Day)
-//     .CreateLogger();
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    // .WriteTo.File("logs/api-.log", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
 
-// builder.Host.UseSerilog();
+builder.Host.UseSerilog();
 
 // Adicionar serviços ao container
 builder.Services.AddControllers().AddJsonOptions(options =>
@@ -271,7 +271,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 app.UseRateLimiter();
-// app.UseSerilogRequestLogging();
+app.UseSerilogRequestLogging();
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -281,18 +281,18 @@ app.MapHealthChecks("/health");
 
 app.MapControllers();
 
-// try
-// {
-//     Log.Information("Iniciando a API eConsulta");
-//     app.Run();
-//     return 0;
-// }
-// catch (Exception ex)
-// {
-//     Log.Fatal(ex, "Host terminated unexpectedly");
-//     return 1;
-// }
-// finally
-// {
-//     Log.CloseAndFlush();
-// }
+try
+{
+    Log.Information("Iniciando a API eConsulta");
+    app.Run();
+    return 0;
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Host terminated unexpectedly");
+    return 1;
+}
+finally
+{
+    Log.CloseAndFlush();
+}
