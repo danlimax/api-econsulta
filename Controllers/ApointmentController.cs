@@ -22,7 +22,7 @@ namespace api_econsulta.Controllers
         }
 
         [Authorize(Roles = "paciente")]
-        [HttpPost("/appointment")]
+        [HttpPost]
         public async Task<ActionResult<Schedule>> CreateAppointment(AppointmentCreateDto dto)
         {
             var claims = this.User.Claims;
@@ -37,7 +37,7 @@ namespace api_econsulta.Controllers
             {
                 return BadRequest(new { message = "Invalid user ID." });
             }
-            
+
             try
             {
                 var scheduleMax = await _appointmentService.CreateAppointment(dto.AppointmentId, userId);
@@ -48,5 +48,7 @@ namespace api_econsulta.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+        
+        
     }
 }

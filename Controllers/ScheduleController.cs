@@ -22,7 +22,7 @@ namespace api_econsulta.Controllers
         }
 
         [Authorize(Roles = "paciente")]
-        [HttpGet("/doctor/{doctorId}")]
+        [HttpGet("doctor/{doctorId}")]
         public async Task<ActionResult<IEnumerable<Schedule>>> GetAll()
         {
             var doctorId = HttpContext.Request.RouteValues["doctorId"];
@@ -47,7 +47,7 @@ namespace api_econsulta.Controllers
         }
 
         [Authorize(Roles = "medico")]
-        [HttpGet("/doctor/appointments")]
+        [HttpGet("doctor/appointments")]
         public async Task<ActionResult<IEnumerable<Schedule>>> GetAllBookedAppointmentsByDoctor()
         {
             var claims = this.User.Claims;
@@ -71,7 +71,7 @@ namespace api_econsulta.Controllers
         }
 
         [Authorize(Roles = "paciente")]
-        [HttpGet("/patient/appointments")]
+        [HttpGet("patient/appointments")]
         public async Task<ActionResult<IEnumerable<Schedule>>> GetAllBookedAppointmentsByPatient()
         {
             var claims = this.User.Claims;
@@ -94,9 +94,9 @@ namespace api_econsulta.Controllers
             }
             return Ok(bookedAppointments);
         }
-
+       
         [Authorize(Roles = "medico")]
-        [HttpPost("/schedule")]
+        [HttpPost]
         public async Task<ActionResult<Schedule>> CreateSchedule(ScheduleCreateDto dto)
         {
             var claims = this.User.Claims;
@@ -129,8 +129,9 @@ namespace api_econsulta.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
-        
+
         [Authorize(Roles = "doctor")]
+        [HttpPut]
         public async Task<ActionResult<Schedule>> UpdateAppointment(int id, ScheduleUpdateDto dto)
         {
             var claims = this.User.Claims;

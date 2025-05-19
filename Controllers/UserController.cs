@@ -9,7 +9,7 @@ using api_econsulta.Exceptions;
 namespace api_econsulta.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/user")]
     public class UserController(UserService userService) : ControllerBase
     {
         private readonly UserService _userService = userService;
@@ -34,7 +34,7 @@ namespace api_econsulta.Controllers
             return Ok(user);
         }
 
-        [HttpPost("/patient")]
+        [HttpPost("patient")]
         public async Task<ActionResult<User>> CreatePatient(UserRegisterDto dto)
         {
             var user = new User
@@ -57,7 +57,7 @@ namespace api_econsulta.Controllers
             }
         }
 
-        [HttpPost("/doctor")]
+        [HttpPost("doctor")]
         public async Task<ActionResult<User>> CreateDoctor(UserRegisterDto dto)
         {
             var user = new User
