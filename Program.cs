@@ -41,7 +41,7 @@ builder.Services.AddSwaggerGen(options =>
         BearerFormat = "JWT"
     });
     
-    // Adiciona o requisito de segurança global (todas as operações serão protegidas)
+    // Adiciona o requisito de segurança global
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
@@ -96,7 +96,6 @@ builder.Services.AddCors(options =>
         {
             builder
                 .WithOrigins(
-                    // Adicione aqui os domínios permitidos
                     "http://localhost:5173/",
                     "https://www.localhost:5173/")
                 .AllowAnyMethod()
@@ -174,7 +173,7 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = !string.IsNullOrEmpty(jwtSettings.Audience),
         ValidAudience = jwtSettings.Audience,
         ValidateLifetime = true,
-        ClockSkew = TimeSpan.Zero // Remove a tolerância padrão de 5 minutos
+        ClockSkew = TimeSpan.Zero 
     };
     
     // Tratamento de eventos JWT
@@ -193,10 +192,10 @@ builder.Services.AddAuthentication(options =>
 
 // Políticas de autorização
 builder.Services.AddAuthorizationBuilder()
-                               // Políticas de autorização
+                               
                                .AddPolicy("DoctorPolicy", policy =>
         policy.RequireClaim(ClaimTypes.Role, "medico"))
-                               // Políticas de autorização
+                               
                                .AddPolicy("PatientPolicy", policy =>
         policy.RequireClaim(ClaimTypes.Role, "paciente"))
                                // Políticas de autorização
@@ -216,7 +215,7 @@ builder.Services.AddHealthChecks()
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<ScheduleService>();
-builder.Services.AddScoped<AppointmentService>();
+
 
 // Rate limiting
 builder.Services.AddRateLimiter(options => {
@@ -243,7 +242,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c => 
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "eConsulta API v1");
-        c.RoutePrefix = string.Empty; // Coloca o Swagger UI na raiz
+        c.RoutePrefix = string.Empty;
         c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
         c.EnableDeepLinking();
         c.DisplayRequestDuration();
@@ -260,7 +259,7 @@ else
     app.UseHsts();
 }
 
-// Configurações de forwarded headers (para uso com proxy reverso)
+// Configurações de forwarded headers 
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto

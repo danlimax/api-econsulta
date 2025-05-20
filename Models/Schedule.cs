@@ -32,7 +32,6 @@ namespace api_econsulta.Models
         [Column("updated_at")]
         public DateTime UpdatedAt { get; set; }
 
-        // Navigation properties
         [ForeignKey("DoctorId")]
         public virtual User Doctor { get; set; } = null!;
 

@@ -9,7 +9,7 @@ namespace api_econsulta.Middlewares
         private readonly RequestDelegate _next = next;
         private readonly ILogger<GlobalExceptionHandlerMiddleware> _logger = logger;
         
-        // ✅ Instância estática reutilizável de JsonSerializerOptions
+       
         private static readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
@@ -41,7 +41,7 @@ namespace api_econsulta.Middlewares
                 }
             };
 
-            // Ajusta o status code baseado no tipo de exceção
+          
             context.Response.StatusCode = exception switch
             {
                 ArgumentException => (int)HttpStatusCode.BadRequest,
@@ -51,7 +51,7 @@ namespace api_econsulta.Middlewares
                 _ => (int)HttpStatusCode.InternalServerError,
             };
 
-            // ✅ Usa a instância estática compartilhada de JsonSerializerOptions
+      
             await context.Response.WriteAsync(JsonSerializer.Serialize(response, _jsonOptions));
         }
     }

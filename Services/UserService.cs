@@ -23,7 +23,19 @@ namespace api_econsulta.Services
         public async Task<List<DoctorDto>> GetAllDoctorsAsync()
         {
             return await _context.Users
-                         .Where(u => u.Role == "medico") // ou sua lógica para identificar médicos
+                         .Where(u => u.Role == "medico") 
+                         .Select(u => new DoctorDto
+                         {
+                             Id = u.Id,
+                             Name = u.Name
+                         })
+                         .ToListAsync();
+        }
+
+        public async Task<List<DoctorDto>> GetAllPatientsAsync()
+        {
+            return await _context.Users
+                         .Where(u => u.Role == "paciente") 
                          .Select(u => new DoctorDto
                          {
                              Id = u.Id,

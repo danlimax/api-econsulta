@@ -17,7 +17,7 @@ namespace api_econsulta.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Configure User entity
+           
             modelBuilder.Entity<User>(entity =>
             {
                 entity.ToTable("users");
@@ -57,7 +57,7 @@ namespace api_econsulta.Data
                     .HasDefaultValueSql("CURRENT_TIMESTAMP");
             });
 
-            // Configure Schedule entity
+           
             modelBuilder.Entity<Schedule>(entity =>
             {
                 entity.ToTable("schedule");
@@ -93,13 +93,13 @@ namespace api_econsulta.Data
                     .HasColumnType("timestamptz")
                     .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-                // Doctor schedule relationship
+                
                 entity.HasOne(s => s.Doctor)
                     .WithMany(u => u.DoctorSchedules)
                     .HasForeignKey(s => s.DoctorId)
                     .OnDelete(DeleteBehavior.Restrict);
 
-                // Patient schedule relationship
+                
                 entity.HasOne(s => s.Patient)
                     .WithMany(u => u.PatientSchedules)
                     .HasForeignKey(s => s.PatientId)

@@ -21,84 +21,38 @@ namespace api_econsulta.Controllers
             return Ok(schedule);
         }
 
-        [Authorize(Roles = "paciente")]
-        [HttpGet("doctor/{doctorId}")]
-        public async Task<ActionResult<IEnumerable<Schedule>>> GetAll()
+        
+        [Authorize]
+        [HttpGet("doctor/apointments/{Doctorid}")]
+        public async Task<ActionResult<List<Schedule>>> GetAllSchedulesByDoctorId(int Doctorid)
         {
-            var doctorId = HttpContext.Request.RouteValues["doctorId"];
-            var doctorIdString = doctorId?.ToString();
-            if (doctorIdString == null)
-            {
-                return BadRequest(new { message = "Doctor ID is required." });
-            }
+            var schedules = await _scheduleService.GetByDoctorIdAsync(Doctorid);
+            if (schedules == null || !schedules.Any())
+                return NotFound("Nenhum horário encontrado para esse médico.");
 
-            var doctorIdInt = int.Parse(doctorIdString);
-            if (doctorIdInt <= 0)
-            {
-                return BadRequest(new { message = "Invalid doctor ID." });
-            }
-
-            var availableSpots = await _scheduleService.GetAllAvailableSpotsByDoctorId(doctorIdInt);
-            if (availableSpots == null || !availableSpots.Any())
-            {
-                return NotFound(new { message = "No available spots found." });
-            }
-            return Ok(availableSpots);
+            return Ok(schedules);
         }
 
-        [Authorize(Roles = "medico")]
-        [HttpGet("doctor/appointments")]
-        public async Task<ActionResult<IEnumerable<Schedule>>> GetAllBookedAppointmentsByDoctor()
+        [Authorize]
+        [HttpGet("patient/apointments/{PatientId}")]
+        public async Task<ActionResult<List<Schedule>>> GetAllSchedulesByPatientId(int PatientId)
         {
-            var claims = this.User.Claims;
-            var userIdClaim = claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-            if (userIdClaim == null)
-            {
-                return BadRequest(new { message = "User ID not found in claims." });
-            }
-            var userId = int.Parse(userIdClaim.Value);
-            if (userId <= 0)
-            {
-                return BadRequest(new { message = "Invalid user ID." });
-            }
+            var schedules = await _scheduleService.GetByPatientIdAsync(PatientId);
+            if (schedules == null || !schedules.Any())
+                return NotFound("Nenhum horário encontrado para esse paciente.");
 
-            var bookedAppointments = await _scheduleService.GetAllBookedAppointmentsByDoctorId(userId);
-            if (bookedAppointments == null || !bookedAppointments.Any())
-            {
-                return NotFound(new { message = "No booked appointments found." });
-            }
-            return Ok(bookedAppointments);
+            return Ok(schedules);
         }
 
-        [Authorize(Roles = "paciente")]
-        [HttpGet("patient/appointments")]
-        public async Task<ActionResult<IEnumerable<Schedule>>> GetAllBookedAppointmentsByPatient()
-        {
-            var claims = this.User.Claims;
-            var userIdClaim = claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-            if (userIdClaim == null)
-            {
-                return BadRequest(new { message = "User ID not found in claims." });
-            }
-
-            var userId = int.Parse(userIdClaim.Value);
-            if (userId <= 0)
-            {
-                return BadRequest(new { message = "Invalid user ID." });
-            }
-
-            var bookedAppointments = await _scheduleService.GetAllBookedAppointmentsByPatientId(userId);
-            if (bookedAppointments == null || !bookedAppointments.Any())
-            {
-                return NotFound(new { message = "No booked appointments found." });
-            }
-            return Ok(bookedAppointments);
-        }
-       
         [Authorize(Roles = "medico")]
         [HttpPost]
-        public async Task<ActionResult<Schedule>> CreateSchedule(ScheduleCreateDto dto)
+        public async Task<ActionResult<IEnumerable<Schedule>>> CreateSchedules([FromBody] List<ScheduleCreateDto> dtos)
         {
+            if (dtos == null || !dtos.Any())
+            {
+                return BadRequest(new { message = "No schedules provided." });
+            }
+
             var claims = this.User.Claims;
             var userIdClaim = claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
             if (userIdClaim == null)
@@ -112,17 +66,18 @@ namespace api_econsulta.Controllers
                 return BadRequest(new { message = "Invalid user ID." });
             }
 
-            var schedule = new Schedule
+            var schedules = dtos.Select(dto => new Schedule
             {
-                DoctorId = userId,
+                DoctorId = userId,  
                 StartTime = dto.StartTime.ToUniversalTime(),
                 EndTime = dto.EndTime.ToUniversalTime(),
-            };
+                PatientId = null
+            }).ToList();
 
             try
             {
-                var scheduleMax = await _scheduleService.CreateSchedule(schedule);
-                return Created($"/api/schedule/{scheduleMax.Id}", scheduleMax);
+                var createdSchedules = await _scheduleService.CreateSchedules(schedules);
+                return Created($"/api/schedule", createdSchedules);
             }
             catch (Exception ex)
             {
@@ -130,10 +85,15 @@ namespace api_econsulta.Controllers
             }
         }
 
-        [Authorize(Roles = "doctor")]
-        [HttpPut]
+        [Authorize(Roles = "medico")]
+        [HttpPut("{id}")]
         public async Task<ActionResult<Schedule>> UpdateAppointment(int id, ScheduleUpdateDto dto)
         {
+            if (id <= 0)
+            {
+                return BadRequest(new { message = "Invalid schedule ID." });
+            }
+
             var claims = this.User.Claims;
             var userIdClaim = claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
             if (userIdClaim == null)
@@ -151,6 +111,39 @@ namespace api_econsulta.Controllers
             {
                 var updatedAppointment = await _scheduleService.UpdateAppointment(id, dto);
                 return Ok(updatedAppointment);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+        
+        [Authorize(Roles = "paciente")]
+        [HttpPut("apointment/{id}")]
+        public async Task<ActionResult<Schedule>> UpdatePatientSchedules(int id)
+        {
+            if (id <= 0)
+            {
+                return BadRequest(new { message = "Invalid schedule ID." });
+            }
+
+            var claims = this.User.Claims;
+            var userIdClaim = claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+            {
+                return BadRequest(new { message = "User ID not found in claims." });
+            }
+
+            var patientId = int.Parse(userIdClaim.Value);
+            if (patientId <= 0)
+            {
+                return BadRequest(new { message = "Invalid patient ID." });
+            }
+
+            try
+            {
+                var bookedAppointment = await _scheduleService.UpdatePatientSchedule(id, patientId);
+                return Ok(bookedAppointment);
             }
             catch (Exception ex)
             {

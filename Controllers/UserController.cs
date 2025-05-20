@@ -41,7 +41,14 @@ namespace api_econsulta.Controllers
             var doctors = await _userService.GetAllDoctorsAsync();
             return Ok(doctors);
         }
-
+        
+        [Authorize]
+        [HttpGet("patients")]
+        public async Task<ActionResult<List<DoctorDto>>> GetPatients()
+        {
+            var patients = await _userService.GetAllPatientsAsync();
+            return Ok(patients);
+        }
 
         
         [HttpPost("patient")]
