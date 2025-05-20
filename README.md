@@ -68,7 +68,7 @@ dotnet watch run
 
 - [Swagger http](http://localhost:5211/) Caso esteja utilizando o profile http.
 
-### 7 Credenciais do banco de dados.
+### 7. Credenciais do banco de dados.
 
 POSTGRES_USER: meuusuario
 POSTGRES_PASSWORD: minhasenha
