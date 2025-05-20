@@ -62,13 +62,14 @@ dotnet run
 
 dotnet watch run
 
-dotnet run --launch-profile https
-
-dotnet watch run --launch-profile https
-
 ```
 
 ### 6. O swagger está na rota raiz para verificação dos endpoints.
 
-- [Swagger https](https://localhost:7083/) Caso esteja utilizando o profile https.
-- [Swagger http](https://localhost:5211/) Caso esteja utilizando o profile https.
+- [Swagger http](http://localhost:5211/) Caso esteja utilizando o profile http.
+
+### 7 Credenciais do banco de dados.
+
+POSTGRES_USER: meuusuario
+POSTGRES_PASSWORD: minhasenha
+POSTGRES_DB: econsulta
